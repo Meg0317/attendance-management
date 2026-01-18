@@ -25,10 +25,12 @@ body {
     color: #fff;
 }
 
-@media screen and (min-width: 1400px) and (max-width: 1540px) {
-    .header__inner {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 40px;
-    }
+.main {
+    padding-top: 60px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
 }

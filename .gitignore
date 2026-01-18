@@ -1,0 +1,7 @@
+# Docker MySQL volume
+/docker/mysql/data/
+
+# OS junk
+.DS_Store
+Thumbs.db
+*:Zone.Identifier

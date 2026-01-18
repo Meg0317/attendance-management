@@ -24,8 +24,9 @@ class RestTimesTableSeeder extends Seeder
 
                 RestTime::create([
                     'attendance_id' => $att->id,
-                    'rest_start' => $start,
-                    'rest_end' => $end,
+                    'order'         => $i + 1, // ← ★これを追加
+                    'rest_start'    => $start,
+                    'rest_end'      => $end,
                 ]);
             }
         }

@@ -15,12 +15,22 @@ class CreateRestTimesTable extends Migration
     {
         Schema::create('rest_times', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('attendance_id')->constrained()->cascadeOnDelete();
+
+            $table->foreignId('attendance_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            // 休憩の順番（0: 休憩1, 1: 休憩2）
+            $table->unsignedTinyInteger('order');
+
             $table->dateTime('rest_start')->nullable();
             $table->dateTime('rest_end')->nullable();
-            $table->timestamps();
-        });
 
+            $table->timestamps();
+
+            // 同じ勤怠に同じ order を作らせない
+            $table->unique(['attendance_id', 'order']);
+        });
     }
 
     /**

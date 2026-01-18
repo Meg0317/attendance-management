@@ -8,13 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class RestTime extends Model
 {
     use HasFactory;
-    protected $guarded = ['id',];
 
-    public function attendance() {
+    protected $guarded = ['id'];
+
+    protected $casts = [
+        'rest_start' => 'datetime',
+        'rest_end'   => 'datetime',
+    ];
+
+    public function attendance()
+    {
         return $this->belongsTo(Attendance::class);
     }
 
-    public function stampCorrectionRequests() {
+    public function stampCorrectionRequests()
+    {
         return $this->hasMany(StampCorrectionRequest::class);
     }
 }

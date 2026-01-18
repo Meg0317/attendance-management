@@ -14,32 +14,34 @@
 <body>
     <header class="header">
         <div class="header__inner">
-            <div class="header-utilities">
-                <a href="/">
-                    <img src="{{ asset('images/COACHTECHヘッダーロゴ.png') }}" alt="COACHTECK">
-                </a>
-                <nav class="header-nav">
-                    @auth
-                        <ul class="header-nav__list">
-                            <li><a href="{{ route('attendance.create') }}">勤怠</a></li>
-                            <li><a href="{{ route('attendance.index') }}">勤怠一覧</a></li>
-                            <li><a href="{{ route('stamp.request') }}">申請</a></li>
+            <a href="/">
+                <img src="{{ asset('images/COACHTECHヘッダーロゴ.png') }}" alt="COACHTECK">
+            </a>
+            <nav class="header-nav">
+                @auth
+                    <ul class="header-nav__list">
+                        <li><a href="{{ route('attendance.index') }}">勤怠</a></li>
+                        <li><a href="{{ route('attendance.list') }}">勤怠一覧</a></li>
+                        {{--<li><a href="{{ route('stamp.request') }}">申請</a></li>--}}
 
-                            <li>
-                                <form action="{{ route('logout') }}" method="post">
-                                    @csrf
-                                    <button type="submit">ログアウト</button>
-                                </form>
-                            </li>
-                        </ul>
-                    @endauth
-                </nav>
-            </div>
+                        <li>
+                            <form action="{{ route('logout') }}" method="post">
+                                @csrf
+                                    <button type="submit" class="header-nav__button">
+                                        ログアウト
+                                    </button>
+                            </form>
+                        </li>
+                    </ul>
+                @endauth
+            </nav>
         </div>
     </header>
-    <div class="content">
-        @yield('content')
-    </div>
+    <main class="main">
+        <div class="container">
+            @yield('content')
+        </div>
+    </main>
 </body>
 
 </html>

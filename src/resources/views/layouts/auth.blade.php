@@ -21,9 +21,11 @@
             </div>
         </div>
     </header>
-    <div class="content">
-        @yield('content')
-    </div>
+    <main class="main">
+        <div class="container">
+            @yield('content')
+        </div>
+    </main>
 </body>
 
 </html>

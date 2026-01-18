@@ -41,7 +41,7 @@
     text-align: left;
 }
 
-.register-form__error-message {
+.login-form__error-message {
     height: 20px;
     color: #FF5555;
     text-align: left;
@@ -88,13 +88,4 @@
     color: #0073CC;
     font-size: 20px;
     font-weight: 400;
-}
-
-@media screen and (min-width: 1400px) and (max-width: 1540px) {
-    .login-form__form {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 40px;
-        box-sizing: border-box;
-    }
 }

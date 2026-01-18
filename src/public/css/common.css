@@ -22,23 +22,11 @@ body {
 
 .header__inner {
     max-width: 1400px;
-    /* ← ここで中央寄せ */
     margin: 0 auto;
-    /* ← */
     padding: 0 40px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-sizing: border-box;
-    width: 100%;
-}
-
-.header-utilities {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    gap: 20px;
 }
 
 .header img {
@@ -49,45 +37,22 @@ body {
     /* 行間余白防止 */
 }
 
-.search-form {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
-
-/* 検索ボックス */
-.header__inner__keyword-input {
-    flex: 1;
-    max-width: 500px;
-    padding: 0.25em 2em;
-    /* 左1文字分、右5文字分くらい */
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 24px;
-    background: #fff;
-    /* 白背景 */
-    color: #000000;
-    /* 黒文字 */
-}
-
 .header-utilities nav {
     flex-shrink: 0;
     /* 幅を削られないようにする */
 }
 
-.header-nav {
+.header-nav__list {
     display: flex;
     align-items: center;
     gap: 30px;
     list-style: none;
-    /* ← 黒丸消す */
     margin: 0;
-    /* デフォルト余白消す */
     padding: 0;
 }
 
-/* ナビゲーションリンク（マイページ・ログイン） */
-.header-nav__link {
+.header-nav__list a,
+.header-nav__button {
     color: #fff;
     text-decoration: none;
     font-size: 24px;
@@ -104,26 +69,12 @@ body {
     font-size: 24px;
 }
 
-/* 出品ボタン */
-.header-nav__item--sell a {
-    display: inline-block;
-    padding: 0.25em 0.5em;
-    /* 左右に0.5文字分くらいの余白 */
-    border: 1px solid #000;
-    border-radius: 4px;
-    background: #fff;
-    /* 白背景 */
-    color: #000;
-    /* 黒文字 */
-    text-decoration: none;
-    font-size: 24px;
-    white-space: nowrap;
+.main {
+    padding-top: 60px;
 }
 
-@media screen and (min-width: 1400px) and (max-width: 1540px) {
-    .header__inner {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 40px;
-    }
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
 }

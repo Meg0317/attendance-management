@@ -61,16 +61,24 @@ class AttendancesTableSeeder extends Seeder
     }
 
     // ---------- 1日分の出勤データ（休憩は別 Seeder で生成） ----------
+   /**
+     * 1日分の出勤データ
+     * 休みの日は attendance 自体を作らない
+     */
     private function createOneDay($userId, Carbon $date)
     {
         $isHoliday = rand(1, 10) === 1; // 10％は休み
 
+        // 休みの日は何も作らない
+        if ($isHoliday) {
+            return;
+        }
+
         Attendance::create([
-            'user_id' => $userId,
-            'date' => $date->toDateString(),
-            'clock_in' => $isHoliday ? null : $date->copy()->setTime(9, 0),
-            'clock_out' => $isHoliday ? null : $date->copy()->setTime(18, 0),
-            'total_work_time' => $isHoliday ? null : '08:00',
+            'user_id'   => $userId,
+            'date'      => $date->toDateString(),
+            'clock_in'  => $date->copy()->setTime(9, 0),
+            'clock_out' => $date->copy()->setTime(18, 0),
         ]);
     }
 }

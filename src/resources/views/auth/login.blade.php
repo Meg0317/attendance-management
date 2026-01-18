@@ -20,7 +20,7 @@
                     <div class="form__input--text">
                         <input type="email" name="email" value="{{ old('email') }}" />
                     </div>
-                    <p class="register-form__error-message">
+                    <p class="login-form__error-message">
                         @error('email')
                         {{ $message }}
                         @enderror
@@ -36,7 +36,7 @@
                     <div class="form__input--text">
                         <input type="password" name="password" />
                     </div>
-                    <p class="register-form__error-message">
+                    <p class="login-form__error-message">
                         @error('password')
                         {{ $message }}
                         @enderror
