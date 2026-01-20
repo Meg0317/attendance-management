@@ -168,8 +168,7 @@ class AttendanceController extends Controller
             ->whereBetween('date', [$start, $end])
             ->with('restTimes')
             ->get()
-            ->keyBy(fn ($att) => $att->date->toDateString()); // ← ここ！
-
+            ->keyBy(fn ($att) => $att->date->toDateString()); 
         return view('attendance.list', compact(
             'dates',
             'attendances',
@@ -177,46 +176,67 @@ class AttendanceController extends Controller
         ));
     }
 
-    public function show($date)
+    public function show($id)
     {
-        $attendance = Attendance::where('user_id', Auth::id())
-            ->whereDate('date', $date)
-            ->with('restTimes')
-            ->first();
+        // attendance が存在する場合（数値 id）
+        if (is_numeric($id)) {
+            $attendance = Attendance::with(['user', 'restTimes'])
+                ->where('id', $id)
+                ->where('user_id', Auth::id())
+                ->firstOrFail();
 
-        return view('attendance.show', compact('attendance', 'date'));
+            return view('attendance.show', [
+                'attendance' => $attendance,
+            ]);
+        }
+
+        // attendance が存在しない日（休日）
+        return view('attendance.show', [
+            'attendance' => null,
+            'user'       => Auth::user(),
+            'date'       => now(), // ← list 側で渡せるなら差し替え
+        ]);
     }
 
-    public function request(
+    /**
+     * 修正申請
+     */
+    public function requestCorrection(
         AttendanceUpdateRequest $request,
-        Attendance $attendance
+        $date
     ) {
+        $attendance = Attendance::where('user_id', Auth::id())
+            ->whereDate('date', $date)
+            ->firstOrFail();
+
+        // 勤怠更新（1回だけ）
         $attendance->update([
-            'clock_in' => $request->clock_in,
+            'clock_in'  => $request->clock_in,
             'clock_out' => $request->clock_out,
-            'status' => 'pending',
+            'note'      => $request->note,
+            'status'    => 'pending',
         ]);
 
-        $rests = $request->input('rests', []);
+        // 休憩
+        foreach ($request->input('rests', []) as $index => $rest) {
 
-        foreach ($rests as $index => $rest) {
-
-            // 両方空なら何もしない
             if (empty($rest['start']) && empty($rest['end'])) {
                 continue;
             }
 
-            $attendance->restTimes()->updateOrCreate(
-                ['order' => $index],
-                [
-                    'rest_start' => $rest['start'] ?? null,
-                    'rest_end'   => $rest['end'] ?? null,
-                ]
-            );
+            $order = $index + 1;
+
+            $restTime = $attendance->restTimes()
+                ->where('order', $order)
+                ->firstOrNew(['order' => $order]);
+
+            $restTime->rest_start = $rest['start'] ?: null;
+            $restTime->rest_end   = $rest['end'] ?: null;
+            $restTime->save();
         }
 
         return redirect()
-            ->route('attendance.show', $attendance->date->format('Y-m-d'))
+            ->route('attendance.detail', $date)
             ->with('success', '修正申請を送信しました');
     }
 }

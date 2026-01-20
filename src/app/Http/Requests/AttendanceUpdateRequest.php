@@ -66,11 +66,17 @@ class AttendanceUpdateRequest extends FormRequest
             |--------------------------------------------------------------------------
             */
 
-            $rest = $this->input('rests', []);
+            $rests = $this->input('rests', []);
 
-            foreach ($rests as $rest) {
+            foreach ($rests as $index => $rest) {
+
                 $start =$rest['start'] ?? null;
                 $end =$rest['end'] ?? null;
+
+                // 空ならチェックスキップ
+                if (!$start && !$end) {
+                    continue;
+                }
 
                 // ② 休憩開始が出勤前 or 退勤後
                 if ($start && (
@@ -78,7 +84,7 @@ class AttendanceUpdateRequest extends FormRequest
                     ($clockOut && $start > $clockOut)
                 )) {
                     $validator->errors()->add(
-                        'rests',
+                        "rests.$index.start",
                         '休憩時間が不適切な値です',
                     );
                 }
@@ -86,7 +92,7 @@ class AttendanceUpdateRequest extends FormRequest
                 // ② 休憩開始が出勤前 or 退勤後
                 if ($end && $clockOut && $end > $clockOut) {
                     $validator->errors()->add(
-                        'rests',
+                        "rests.$index.end",
                         '休憩時間もしくは退勤時間が不適切な値です',
                     );
                 }

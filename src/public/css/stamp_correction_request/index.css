@@ -1,0 +1,76 @@
+/* 全体 */
+.request-list {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* 見出し */
+.request-list__heading {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 24px;
+}
+
+/* タブ */
+.request-list__tabs {
+    display: flex;
+    gap: 40px;
+}
+
+.request-list__tab {
+    padding-bottom: 8px;
+    text-decoration: none;
+    color: #666;
+    font-weight: bold;
+}
+
+.request-list__tab.is-active {
+    color: #000;
+    border-bottom: 2px solid #000;
+}
+
+/* タブ下の線 */
+.request-list__border {
+    margin-top: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 余白 */
+.request-list__space {
+    height: 32px;
+}
+
+/* テーブル */
+.request-list__table-wrapper {
+    width: 100%;
+}
+
+.request-list__table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.request-list__table th,
+.request-list__table td {
+    padding: 16px 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.request-list__table th {
+    font-weight: bold;
+}
+
+/* 詳細リンク */
+.request-list__detail-link {
+    color: #000;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+/* 空表示 */
+.request-list__empty {
+    text-align: center;
+    padding: 32px;
+    color: #888;
+}

@@ -72,9 +72,15 @@
 
                     {{-- 詳細 --}}
                     <td>
-                        <a href="{{ route('attendance.show', $date->toDateString()) }}">
-                            詳細
-                        </a>
+                        @if ($attendance)
+                            <a href="{{ route('attendance.detail', $attendance->id) }}">
+                                詳細
+                            </a>
+                        @else
+                            <a href="{{ route('attendance.detail', 'empty-' . $date->format('Ymd')) }}">
+                                詳細
+                            </a>
+                        @endif
                     </td>
                 </tr>
             @endforeach

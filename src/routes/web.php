@@ -4,9 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AttendanceController;
 
 Route::get('/', function () {
-    return auth()->check()
-        ? redirect('/attendance')
-        : redirect('/login');
+    return redirect('/login');
 });
 
 
@@ -41,11 +39,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/attendance/list', [AttendanceController::class, 'list'])
         ->name('attendance.list');
 
-    Route::get('/attendance/show/{date}', [AttendanceController::class, 'show'])
-    ->name('attendance.show');
+    Route::get('/attendance/detail/{date}', [AttendanceController::class, 'show'])
+    ->name('attendance.detail');
 
-    Route::post('/attendance/{attendance}/request', [AttendanceController::class, 'requestCorrection'])
+    Route::post('/attendance/{date}/request', [AttendanceController::class, 'requestCorrection'])
         ->name('attendance.request');
 
+   
 });
 
