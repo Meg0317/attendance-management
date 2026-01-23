@@ -45,29 +45,33 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse ($requests as $request)
+                @foreach ($requests as $request)
                     <tr>
-                        <td>{{ $request->status === 'pending' ? '承認待ち' : '承認済み' }}</td>
-                        <td>{{ $request->user->name }}</td>
-                        <td>{{ $request->attendance->date->format('Y/m/d') }}</td>
-                        <td>{{ $request->note }}</td>
-                        <td>{{ $request->created_at->format('Y/m/d H:i') }}</td>
+                        <td>
+                            {{ $request->status === 0 ? '承認待ち' : '承認済み' }}
+                        </td>
+                        <td>
+                            {{ $request->user->name }}
+                        </td>
+                        <td>
+                            {{ $request->attendance->date->format('Y/m/d') }}
+                        </td>
+                        <td>
+                            {{ $request->reason }}
+                        </td>
+                        <td>
+                            {{ $request->created_at->format('Y/m/d') }}
+                        </td>
                         <td>
                             <a
-                                href="{{ route('attendance.detail', $request->attendance->date->format('Y-m-d')) }}"
+                                href="{{ route('stamp_correction_request.show', $request->id) }}"
                                 class="request-list__detail-link"
                             >
                                 詳細
                             </a>
                         </td>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="request-list__empty">
-                            データがありません
-                        </td>
-                    </tr>
-                @endforelse
+                @endforeach
             </tbody>
         </table>
     </div>

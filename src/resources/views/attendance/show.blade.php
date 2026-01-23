@@ -5,193 +5,125 @@
 @endsection
 
 @section('content')
+<div class="attendance-wrapper">
 
-<div class="attendance-show">
-    <h2 class="attendance__heading">勤怠詳細</h2>
+<form method="POST" action="{{ route('attendance.update', $attendance) }}">
+@csrf
 
-    {{-- =========================================
-        attendance が存在しない日（休日など）
-    ========================================= --}}
-    @if (!$attendance)
+@php
+    $readonly = $attendance->status === 'pending';
+    $rests = $attendance->restTimes->keyBy('order');
+    $rest1 = $rests->get(1);
+    $rest2 = $rests->get(2);
+@endphp
 
-        <div class="attendance-detail">
+<h2 class="page-title">勤怠詳細</h2>
 
-            <div class="attendance-detail__row">
-                <div class="attendance-detail__label">名前</div>
-                <div class="attendance-detail__value">{{ $user->name }}</div>
-            </div>
+<div class="card">
 
-            <div class="attendance-detail__row">
-                <div class="attendance-detail__label">日付</div>
-                <div class="attendance-detail__value">{{ $date->format('Y年 n月j日') }}</div>
-            </div>
-
-            <div class="attendance-detail__row">
-                <div class="attendance-detail__label">出勤・退勤</div>
-                <div class="attendance-detail__value"></div>
-            </div>
-
-            <div class="attendance-detail__row">
-                <div class="attendance-detail__label">休憩1</div>
-                <div class="attendance-detail__value"></div>
-            </div>
-
-            <div class="attendance-detail__row">
-                <div class="attendance-detail__label">休憩2</div>
-                <div class="attendance-detail__value"></div>
-            </div>
-
-            <div class="attendance-detail__row">
-                <div class="attendance-detail__label">備考</div>
-                <div class="attendance-detail__value"></div>
-            </div>
-
-        </div>
-
-    {{-- =========================================
-        修正可能フォーム（status !== pending）
-    ========================================= --}}
-    @elseif ($attendance->status !== 'pending')
-
-        <form method="POST" action="{{ route('attendance.request', $attendance->date->format('Y-m-d')) }}">
-            @csrf
-
-            <div class="attendance-detail">
-
-                {{-- 名前 --}}
-                <div class="attendance-detail__row">
-                    <div class="attendance-detail__label">名前</div>
-                    <div class="attendance-detail__value value-align">
-                        <div class="align-left">{{ $attendance->user->name }}</div>
-                    </div>
-                </div>
-
-                {{-- 日付 --}}
-                <div class="attendance-detail__row">
-                    <div class="attendance-detail__label">日付</div>
-                    <div class="attendance-detail__value value-align">
-                        <div class="align-left">{{ $attendance->date->format('Y年') }}</div>
-                        <div class="align-separator"></div>
-                        <div class="align-right">{{ $attendance->date->format('n月j日') }}</div>
-                    </div>
-                </div>
-
-                {{-- 出勤・退勤 --}}
-                <div class="attendance-detail__row">
-                    <div class="attendance-detail__label">出勤・退勤</div>
-                    <div class="attendance-detail__value value-time">
-                        <input type="time" name="clock_in"
-                               value="{{ optional($attendance->clock_in)->format('H:i') }}"
-                               class="{{ $attendance->clock_in ? 'has-value' : '' }}">
-                        <span class="time-separator">〜</span>
-                        <input type="time" name="clock_out"
-                               value="{{ optional($attendance->clock_out)->format('H:i') }}"
-                               class="{{ $attendance->clock_out ? 'has-value' : '' }}">
-                    </div>
-                </div>
-
-                {{-- 休憩1 --}}
-                @php $rest1 = $attendance->restTimes[0] ?? null; @endphp
-                <div class="attendance-detail__row">
-                    <div class="attendance-detail__label">休憩1</div>
-                    <div class="attendance-detail__value value-time">
-                        <input type="time" name="rests[0][start]"
-                               value="{{ optional($rest1?->rest_start)->format('H:i') }}"
-                               class="{{ $rest1?->rest_start ? 'has-value' : '' }}">
-                        <span class="time-separator">〜</span>
-                        <input type="time" name="rests[0][end]"
-                               value="{{ optional($rest1?->rest_end)->format('H:i') }}"
-                               class="{{ $rest1?->rest_end ? 'has-value' : '' }}">
-                    </div>
-                </div>
-
-                {{-- 休憩2（値がある場合のみ表示） --}}
-                @php $rest2 = $attendance->restTimes[1] ?? null; @endphp
-                @if ($rest2 && ($rest2->rest_start || $rest2->rest_end))
-                    <div class="attendance-detail__row">
-                        <div class="attendance-detail__label">休憩2</div>
-                        <div class="attendance-detail__value value-time">
-                            <input type="time" name="rests[1][start]"
-                                   value="{{ optional($rest2?->rest_start)->format('H:i') }}"
-                                   class="{{ $rest2?->rest_start ? 'has-value' : '' }}">
-                            <span class="time-separator">〜</span>
-                            <input type="time" name="rests[1][end]"
-                                   value="{{ optional($rest2?->rest_end)->format('H:i') }}"
-                                   class="{{ $rest2?->rest_end ? 'has-value' : '' }}">
-                        </div>
-                    </div>
-                @endif
-
-                {{-- 備考 --}}
-                <div class="attendance-detail__row">
-                    <div class="attendance-detail__label">備考</div>
-                    <div class="attendance-detail__value value-note">
-                        <textarea name="note">{{ $attendance->note }}</textarea>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="attendance-detail__actions">
-                <button type="submit" class="attendance-detail__button">修正</button>
-            </div>
-        </form>
-
-    {{-- =========================================
-        承認待ち画面（status === pending）
-    ========================================= --}}
-    @else
-
-        <div class="attendance-detail">
-
-            <div class="attendance-detail__row">
-                <div class="attendance-detail__label">名前</div>
-                <div class="attendance-detail__value">{{ $attendance->user->name }}</div>
-            </div>
-
-            <div class="attendance-detail__row">
-                <div class="attendance-detail__label">日付</div>
-                <div class="attendance-detail__value">{{ $attendance->date->format('Y年 n月j日') }}</div>
-            </div>
-
-            {{-- 出勤・退勤 --}}
-            <div class="attendance-detail__row">
-                <div class="attendance-detail__label">出勤・退勤</div>
-                <div class="attendance-detail__value">
-                    {{ $attendance->clock_in?->format('H:i') }} 〜 {{ $attendance->clock_out?->format('H:i') }}
-                </div>
-            </div>
-
-            {{-- 休憩1 --}}
-            <div class="attendance-detail__row">
-                <div class="attendance-detail__label">休憩1</div>
-                <div class="attendance-detail__value value-time">
-                    <span class="time-box">{{ $attendance->restTimes[0]?->rest_start?->format('H:i') ?? '' }}</span>
-                    <span class="time-separator">〜</span>
-                    <span class="time-box">{{ $attendance->restTimes[0]?->rest_end?->format('H:i') ?? '' }}</span>
-                </div>
-            </div>
-
-            {{-- 休憩2 --}}
-            <div class="attendance-detail__row">
-                <div class="attendance-detail__label">休憩2</div>
-                <div class="attendance-detail__value value-time">
-                    <span class="time-box">{{ $attendance->restTimes[1]?->rest_start?->format('H:i') ?? '' }}</span>
-                    <span class="time-separator">〜</span>
-                    <span class="time-box">{{ $attendance->restTimes[1]?->rest_end?->format('H:i') ?? '' }}</span>
-                </div>
-            </div>
-
-            <div class="attendance-detail__row">
-                <div class="attendance-detail__label">備考</div>
-                <div class="attendance-detail__value">{{ $attendance->note }}</div>
-            </div>
-
-        </div>
-
-        <p class="attendance-detail__message">※ 承認待ちのため修正はできません</p>
-
-    @endif
+{{-- 名前 --}}
+<div class="row">
+    <div class="label">名前</div>
+    <div class="value">{{ $attendance->user->name }}</div>
 </div>
 
+{{-- 日付 --}}
+<div class="row">
+    <div class="label">日付</div>
+    <div class="value date">
+        <span>{{ $attendance->date->format('Y年') }}</span>
+        <span>{{ $attendance->date->format('n月j日') }}</span>
+    </div>
+</div>
+
+{{-- 出勤・退勤 --}}
+<div class="row">
+    <div class="label">出勤・退勤</div>
+    <div class="value time">
+        @if(!$readonly)
+            <input type="time" name="clock_in"
+                value="{{ old('clock_in', optional($attendance->clock_in)->format('H:i')) }}">
+            <span>〜</span>
+            <input type="time" name="clock_out"
+                value="{{ old('clock_out', optional($attendance->clock_out)->format('H:i')) }}">
+        @else
+            <span>{{ optional($attendance->clock_in)->format('H:i') }}</span>
+            <span>〜</span>
+            <span>{{ optional($attendance->clock_out)->format('H:i') }}</span>
+        @endif
+    </div>
+</div>
+@error('clock_in') <div class="error">{{ $message }}</div> @enderror
+@error('clock_out') <div class="error">{{ $message }}</div> @enderror
+
+{{-- 休憩 --}}
+<div class="row">
+    <div class="label">休憩</div>
+    <div class="value time">
+        @if(!$readonly)
+            <input type="time" name="rests[0][start]"
+                value="{{ old('rests.0.start', optional($rest1?->rest_start)->format('H:i')) }}">
+            <span>〜</span>
+            <input type="time" name="rests[0][end]"
+                value="{{ old('rests.0.end', optional($rest1?->rest_end)->format('H:i')) }}">
+        @else
+            <span>{{ optional($rest1?->rest_start)->format('H:i') }}</span>
+            <span>〜</span>
+            <span>{{ optional($rest1?->rest_end)->format('H:i') }}</span>
+        @endif
+    </div>
+</div>
+@error('rests.0.start') <div class="error">{{ $message }}</div> @enderror
+@error('rests.0.end') <div class="error">{{ $message }}</div> @enderror
+
+{{-- 休憩2 --}}
+@if(!$readonly || ($rest2 && ($rest2->rest_start || $rest2->rest_end)))
+<div class="row">
+    <div class="label">休憩2</div>
+    <div class="value time">
+        @if(!$readonly)
+            <input type="time" name="rests[1][start]"
+                value="{{ old('rests.1.start', optional($rest2?->rest_start)->format('H:i')) }}">
+            <span>〜</span>
+            <input type="time" name="rests[1][end]"
+                value="{{ old('rests.1.end', optional($rest2?->rest_end)->format('H:i')) }}">
+        @else
+            <span>{{ optional($rest2?->rest_start)->format('H:i') }}</span>
+            <span>〜</span>
+            <span>{{ optional($rest2?->rest_end)->format('H:i') }}</span>
+        @endif
+    </div>
+</div>
+@error('rests.1.start') <div class="error">{{ $message }}</div> @enderror
+@error('rests.1.end') <div class="error">{{ $message }}</div> @enderror
+@endif
+
+{{-- 備考 --}}
+<div class="row">
+    <div class="label">備考</div>
+    <div class="value">
+        @if(!$readonly)
+            <textarea name="note">{{ old('note', $attendance->note) }}</textarea>
+        @else
+            {{ $attendance->note }}
+        @endif
+    </div>
+</div>
+@error('note') <div class="error">{{ $message }}</div> @enderror
+
+</div>
+
+{{-- ボタン --}}
+@if(!$readonly)
+<div class="actions">
+    <button class="btn">修正</button>
+</div>
+@else
+<div class="actions pending">
+    ※ 承認待ちのため修正はできません
+</div>
+@endif
+
+</form>
+</div>
 @endsection
