@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends($isAdmin ? 'layouts.admin' : 'layouts.app')
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/stamp_correction_request/index.css') }}">
@@ -12,13 +12,20 @@
     {{-- タブ --}}
     <div class="request-list__tabs">
         <a
-            href="{{ route('stamp_correction_request.list', ['tab' => 'pending']) }}"
+            href="{{ route(
+                $isAdmin ? 'admin.stamp_correction_request.list' : 'stamp_correction_request.list',
+                ['tab' => 'pending']
+            ) }}"
             class="request-list__tab {{ $tab === 'pending' ? 'is-active' : '' }}"
         >
             承認待ち
         </a>
+
         <a
-            href="{{ route('stamp_correction_request.list', ['tab' => 'approved']) }}"
+            href="{{ route(
+                $isAdmin ? 'admin.stamp_correction_request.list' : 'stamp_correction_request.list',
+                ['tab' => 'approved']
+            ) }}"
             class="request-list__tab {{ $tab === 'approved' ? 'is-active' : '' }}"
         >
             承認済み
@@ -63,15 +70,32 @@
                             {{ $request->created_at->format('Y/m/d') }}
                         </td>
                         <td>
-                            <a
-                                href="{{ route('stamp_correction_request.show', $request->id) }}"
-                                class="request-list__detail-link"
-                            >
-                                詳細
-                            </a>
+                            @if ($isAdmin)
+                                <a href="{{ route(
+                                    'admin.stamp_correction_request.approve',
+                                    $request
+                                ) }}">
+                                    詳細
+                                </a>
+                            @else
+                                <a href="{{ route(
+                                    'attendance.request.confirm',
+                                    $request->attendance->id
+                                ) }}">
+                                    詳細
+                                </a>
+                            @endif
                         </td>
                     </tr>
                 @endforeach
+
+                @if ($requests->isEmpty())
+                    <tr>
+                        <td colspan="6" style="text-align:center; padding:16px;">
+                            データがありません
+                        </td>
+                    </tr>
+                @endif
             </tbody>
         </table>
     </div>

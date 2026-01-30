@@ -42,6 +42,10 @@ body {
     /* 幅を削られないようにする */
 }
 
+.header-nav {
+    display: flex;
+}
+
 .header-nav__list {
     display: flex;
     align-items: center;
@@ -67,6 +71,7 @@ body {
     cursor: pointer;
     white-space: nowrap;
     font-size: 24px;
+    margin-left: 20px;
 }
 
 .main {

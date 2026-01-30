@@ -1,13 +1,22 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/attendance/show.css') }}">
+<link rel="stylesheet" href="{{ asset('css/admin/attendance/show.css') }}">
 @endsection
 
 @section('content')
 <div class="attendance-wrapper">
 
-<form method="POST" action="{{ route('attendance.update', $attendance->id) }}">
+@isset($attendance)
+
+{{-- ✅ 成功メッセージ --}}
+@if (session('success'))
+    <div class="alert success">
+        {{ session('success') }}
+    </div>
+@endif
+
+<form method="POST" action="{{ route('admin.attendance.update', $attendance->id) }}">
 @csrf
 
 @php
@@ -51,15 +60,10 @@
             <span>〜</span>
             <span>{{ optional($attendance->clock_out)->format('H:i') }}</span>
         @endif
-
-        @error('clock_in')
-            <div class="error">{{ $message }}</div>
-        @enderror
-        @error('clock_out')
-            <div class="error">{{ $message }}</div>
-        @enderror
     </div>
 </div>
+@error('clock_in') <div class="error">{{ $message }}</div> @enderror
+@error('clock_out') <div class="error">{{ $message }}</div> @enderror
 
 {{-- 休憩 --}}
 <div class="row">
@@ -76,15 +80,10 @@
             <span>〜</span>
             <span>{{ optional($rest1?->rest_end)->format('H:i') }}</span>
         @endif
-
-        @error('rests.0.start')
-            <div class="error">{{ $message }}</div>
-        @enderror
-        @error('rests.0.end')
-            <div class="error">{{ $message }}</div>
-        @enderror
     </div>
 </div>
+@error('rests.0.start') <div class="error">{{ $message }}</div> @enderror
+@error('rests.0.end') <div class="error">{{ $message }}</div> @enderror
 
 {{-- 休憩2 --}}
 @if(!$readonly || ($rest2 && ($rest2->rest_start || $rest2->rest_end)))
@@ -102,15 +101,10 @@
             <span>〜</span>
             <span>{{ optional($rest2?->rest_end)->format('H:i') }}</span>
         @endif
-
-        @error('rests.1.start')
-            <div class="error">{{ $message }}</div>
-        @enderror
-        @error('rests.1.end')
-            <div class="error">{{ $message }}</div>
-        @enderror
     </div>
 </div>
+@error('rests.1.start') <div class="error">{{ $message }}</div> @enderror
+@error('rests.1.end') <div class="error">{{ $message }}</div> @enderror
 @endif
 
 {{-- 備考 --}}
@@ -122,12 +116,9 @@
         @else
             {{ $attendance->note }}
         @endif
-
-        @error('note')
-            <div class="error">{{ $message }}</div>
-        @enderror
     </div>
 </div>
+@error('note') <div class="error">{{ $message }}</div> @enderror
 
 </div>
 
@@ -143,5 +134,14 @@
 @endif
 
 </form>
+
+@else
+{{-- attendance が存在しない場合 --}}
+<h2 class="page-title">勤怠詳細</h2>
+<div class="card empty">
+    勤怠データが存在しません。
+</div>
+@endisset
+
 </div>
 @endsection

@@ -1,0 +1,65 @@
+.attendance-list {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* 月切り替え */
+.attendance-month {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: #fff;
+    padding: 15px 20px;
+    border-radius: 6px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+.attendance-month__current {
+    font-weight: bold;
+}
+
+/* 余白 */
+.attendance-space {
+    height: 30px;
+}
+
+/* テーブル枠 */
+.attendance-table-wrapper {
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+/* テーブル */
+.attendance__table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.attendance__table th,
+.attendance__table td {
+    padding: 12px;
+    text-align: center;
+}
+
+/* 横線（区切り線） */
+.attendance__table tbody tr {
+    border-top: 1px solid #e0e0e0;
+}
+
+/* ヘッダー */
+.attendance__table thead {
+    background: #f7f7f7;
+}
+
+/* 詳細ボタン */
+.attendance__detail-btn {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.attendance__detail-btn:hover {
+    text-decoration: underline;
+}

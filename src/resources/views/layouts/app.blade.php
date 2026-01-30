@@ -23,16 +23,12 @@
                         <li><a href="{{ route('attendance.index') }}">勤怠</a></li>
                         <li><a href="{{ route('attendance.list') }}">勤怠一覧</a></li>
                         <li><a href="{{ route('stamp_correction_request.list') }}">申請</a></li>
-
-                        <li>
-                            <form action="{{ route('logout') }}" method="post">
-                                @csrf
-                                    <button type="submit" class="header-nav__button">
-                                        ログアウト
-                                    </button>
-                            </form>
-                        </li>
                     </ul>
+
+                    <form action="{{ route('logout') }}" method="post">
+                        @csrf
+                        <button type="submit" class="header-nav__button">ログアウト</button>
+                    </form>
                 @endauth
             </nav>
         </div>

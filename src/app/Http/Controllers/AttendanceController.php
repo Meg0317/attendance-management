@@ -185,12 +185,20 @@ class AttendanceController extends Controller
     /**
      * 修正申請
      */
-    public function update(AttendanceUpdateRequest $request, Attendance $attendance)
+    public function update(AttendanceUpdateRequest $request, $id)
     {
+        $attendance = Attendance::with('restTimes')->findOrFail($id);
+
+        // 本人チェック
         if ($attendance->user_id !== Auth::id()) {
             abort(403);
         }
 
+        // 修正前の値を保持
+        $beforeClockIn  = $attendance->clock_in;
+        $beforeClockOut = $attendance->clock_out;
+
+        // 勤怠更新（申請なので pending）
         $attendance->update([
             'clock_in'  => $request->clock_in,
             'clock_out' => $request->clock_out,
@@ -198,18 +206,17 @@ class AttendanceController extends Controller
             'status'    => 'pending',
         ]);
 
+        // 申請レコード作成
         StampCorrectionRequest::create([
             'user_id'       => Auth::id(),
             'attendance_id' => $attendance->id,
-
-            // 修正前・修正後
-            'before_value'  => optional($attendance->clock_in)->format('H:i'),
+            'before_value'  => optional($beforeClockIn)?->format('H:i'),
             'after_value'   => $request->clock_in,
-
             'reason'        => $request->note,
             'status'        => 0, // 承認待ち
         ]);
 
+        // 休憩更新
         foreach ($request->rests ?? [] as $index => $rest) {
             if (empty($rest['start']) && empty($rest['end'])) {
                 continue;
@@ -224,7 +231,8 @@ class AttendanceController extends Controller
             );
         }
 
-        return redirect()->route('attendance.request.confirm', $attendance);
+        return redirect()
+            ->route('attendance.request.confirm', $attendance->id);
     }
 
     /**

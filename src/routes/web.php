@@ -3,61 +3,112 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\StampCorrectionRequestController;
+use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-Route::get('/', function () {
-    return redirect('/login');
+/*
+|----------------------------------------------------------------------
+| トップ
+|----------------------------------------------------------------------
+*/
+Route::get('/', fn() => redirect('/login'));
+
+/*
+|----------------------------------------------------------------------
+| ログイン画面
+|----------------------------------------------------------------------
+*/
+Route::get('/login', fn() => view('auth.login'))
+    ->middleware('guest')
+    ->name('login');
+
+Route::get('/admin/login', fn() => view('admin.auth.login'))
+    ->middleware('guest')
+    ->name('admin.login');
+
+/*
+|----------------------------------------------------------------------
+| メール認証画面
+|----------------------------------------------------------------------
+*/
+Route::get('/email/verify', fn() => view('auth.verify-email'))
+    ->middleware('auth')
+    ->name('verification.notice');
+
+/*
+|----------------------------------------------------------------------
+| 一般ユーザー用
+|----------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'user'])->group(function () {
+    Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('/attendance/start', [AttendanceController::class, 'start'])->name('attendance.start');
+    Route::post('/attendance/rest/start', [AttendanceController::class, 'restStart'])->name('attendance.rest.start');
+    Route::post('/attendance/rest/end', [AttendanceController::class, 'restEnd'])->name('attendance.rest.end');
+    Route::post('/attendance/end', [AttendanceController::class, 'clockout'])->name('attendance.clockout');
+    Route::get('/attendance/list', [AttendanceController::class, 'list'])->name('attendance.list');
+    Route::get('/attendance/detail/{attendance}', [AttendanceController::class, 'show'])->name('attendance.detail');
+    Route::post('/attendance/detail/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
+    Route::get('/attendance/request/{attendance}', [AttendanceController::class, 'requestConfirm'])->name('attendance.request.confirm');
+    Route::get('/stamp_correction_request/list', [StampCorrectionRequestController::class, 'index'])->name('stamp_correction_request.list');
+    Route::get('/stamp_correction_request/{request}', [StampCorrectionRequestController::class, 'show'])->name('stamp_correction_request.show');
 });
 
+/*
+|--------------------------------------------------------------------------
+| 管理者用
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')
+    ->middleware(['auth', 'admin'])
+    ->group(function () {
 
-// メール認証案内ページ（Fortifyが使う）
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->middleware('auth')->name('verification.notice');
+        Route::get('/', fn() => redirect()->route('admin.attendance.list'));
 
-Route::middleware(['auth', 'verified'])->group(function () {
+        // 勤怠一覧
+        Route::get('/attendance/list',
+            [AdminAttendanceController::class, 'index']
+        )->name('admin.attendance.list');
 
-    // 打刻画面（TOP）
-    Route::get('/attendance', [AttendanceController::class, 'index'])
-        ->name('attendance.index');
+        // 勤怠詳細
+        Route::get('/attendance/{attendance}',
+            [AdminAttendanceController::class, 'show']
+        )->name('admin.attendance.show');
 
-    // 出勤
-    Route::post('/attendance/start', [AttendanceController::class, 'start'])
-        ->name('attendance.start');
+        // 勤怠更新
+        Route::post('/attendance/{attendance}',
+            [AdminAttendanceController::class, 'update']
+        )->name('admin.attendance.update');
 
-    // 休憩開始
-    Route::post('/attendance/rest/start', [AttendanceController::class, 'restStart'])
-        ->name('attendance.rest.start');
+        // スタッフ一覧
+        // Route::get('/staff/list',
+        //     [AdminStaffController::class, 'index']
+        // )->name('admin.staff.list');
 
-    // 休憩終了
-    Route::post('/attendance/rest/end', [AttendanceController::class, 'restEnd'])
-        ->name('attendance.rest.end');
+        // スタッフ別 勤怠一覧
+        Route::get('/attendance/staff/{user}',
+            [AdminAttendanceController::class, 'staffIndex']
+        )->name('admin.attendance.staff');
 
-    // 退勤
-    Route::post('/attendance/end', [AttendanceController::class, 'clockout'])
-        ->name('attendance.clockout');
 
-    //勤怠一覧
-    Route::get('/attendance/list', [AttendanceController::class, 'list'])
-        ->name('attendance.list');
+        // 申請一覧（管理者）
+        Route::get(
+            '/stamp_correction_request/list',
+            [StampCorrectionRequestController::class, 'adminIndex']
+        )->name('admin.stamp_correction_request.list');
 
-    // 勤怠詳細
-    Route::get('/attendance/detail/{attendance}', [AttendanceController::class, 'show'])
-        ->name('attendance.detail');
+        // 修正申請承認画面（GET）
+        Route::get(
+            '/stamp_correction_request/approve/{stampCorrectionRequest}',
+            [StampCorrectionRequestController::class, 'approve']
+        )->name('admin.stamp_correction_request.approve');
 
-    // 勤怠修正
-    Route::post('/attendance/detail/{attendance}', [AttendanceController::class, 'update'])
-        ->name('attendance.update');
+        // 承認処理（POST）
+        Route::post(
+            '/stamp_correction_request/approve/{stampCorrectionRequest}',
+            [StampCorrectionRequestController::class, 'approveStore']
+        )->name('admin.stamp_correction_request.approve.store');
+    });
 
-    // ★ 修正申請後（readonly）
-    Route::get('/attendance/request/{attendance}', [AttendanceController::class, 'requestConfirm'])
-        ->name('attendance.request.confirm');
-
-    // 申請一覧
-    Route::get('/stamp_correction_request/list', [StampCorrectionRequestController::class, 'index'])
-        ->name('stamp_correction_request.list');
-
-    // 申請一覧 → 詳細
-    Route::get('/stamp_correction_request/{request}', [StampCorrectionRequestController::class, 'show'])
-        ->name('stamp_correction_request.show');
-});
 
