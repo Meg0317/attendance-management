@@ -7,7 +7,7 @@
 @section('content')
 
 <div class="attendance-list">
-    <h2 class="attendance__heading">{{ $date->format('Y年m月d日') }}の勤怠</h2>
+    <h2 class="attendance__heading">{{ $date->format('Y年n月j日') }}の勤怠</h2>
 
     {{-- 日付切り替え --}}
     <div class="attendance-month">

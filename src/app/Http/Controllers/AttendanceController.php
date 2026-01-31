@@ -134,11 +134,11 @@ class AttendanceController extends Controller
     }
 
     /**
-     * 勤怠一覧
+     * 勤怠一覧（月次）【★ここだけ修正】
      */
     public function list()
     {
-        $userId = Auth::id();
+        $user = Auth::user(); // ★ 表示対象ユーザー
 
         $month = request('month')
             ? Carbon::parse(request('month') . '-01')
@@ -149,21 +149,23 @@ class AttendanceController extends Controller
 
         $dates = CarbonPeriod::create($start, $end);
 
-        $attendances = Attendance::where('user_id', $userId)
+        $attendances = Attendance::where('user_id', $user->id)
             ->whereBetween('date', [$start, $end])
             ->with('restTimes')
             ->get()
             ->keyBy(fn ($att) => $att->date->toDateString());
 
-        return view('attendance.list', compact(
-            'dates',
-            'attendances',
-            'month'
-        ));
+        return view('attendance.list', [
+            'dates'       => $dates,
+            'attendances' => $attendances,
+            'month'       => $month,
+            'user'        => $user,     // ★ 追加
+            'isAdmin'     => false,     // ★ 一般ユーザー
+        ]);
     }
 
     /**
-     * 勤怠詳細（通常）
+     * 勤怠詳細（日次）
      */
     public function show(Attendance $attendance)
     {
@@ -176,7 +178,6 @@ class AttendanceController extends Controller
             'restTimes' => fn ($q) => $q->orderBy('order'),
         ]);
 
-        // ★ 通常表示：申請なし
         $stampRequest = null;
 
         return view('attendance.show', compact('attendance', 'stampRequest'));
@@ -189,16 +190,10 @@ class AttendanceController extends Controller
     {
         $attendance = Attendance::with('restTimes')->findOrFail($id);
 
-        // 本人チェック
         if ($attendance->user_id !== Auth::id()) {
             abort(403);
         }
 
-        // 修正前の値を保持
-        $beforeClockIn  = $attendance->clock_in;
-        $beforeClockOut = $attendance->clock_out;
-
-        // 勤怠更新（申請なので pending）
         $attendance->update([
             'clock_in'  => $request->clock_in,
             'clock_out' => $request->clock_out,
@@ -206,17 +201,15 @@ class AttendanceController extends Controller
             'status'    => 'pending',
         ]);
 
-        // 申請レコード作成
         StampCorrectionRequest::create([
             'user_id'       => Auth::id(),
             'attendance_id' => $attendance->id,
-            'before_value'  => optional($beforeClockIn)?->format('H:i'),
+            'before_value'  => optional($attendance->clock_in)?->format('H:i'),
             'after_value'   => $request->clock_in,
             'reason'        => $request->note,
-            'status'        => 0, // 承認待ち
+            'status'        => 0,
         ]);
 
-        // 休憩更新
         foreach ($request->rests ?? [] as $index => $rest) {
             if (empty($rest['start']) && empty($rest['end'])) {
                 continue;
@@ -236,7 +229,7 @@ class AttendanceController extends Controller
     }
 
     /**
-     * 修正申請後・申請一覧からの確認（readonly）
+     * 修正申請後確認
      */
     public function requestConfirm(Attendance $attendance)
     {
@@ -250,7 +243,7 @@ class AttendanceController extends Controller
         ]);
 
         $stampRequest = StampCorrectionRequest::where('attendance_id', $attendance->id)
-            ->where('status', 0) // pending
+            ->where('status', 0)
             ->latest()
             ->first();
 

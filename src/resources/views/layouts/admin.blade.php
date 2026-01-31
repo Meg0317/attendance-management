@@ -25,9 +25,9 @@
                     </a>
                 </li>
                 <li>
-                    {{--<a href="{{ route('admin.staff.list') }}">
+                    <a href="{{ route('admin.staff.list') }}">
                         スタッフ一覧
-                    </a>--}}
+                    </a>
                 </li>
                 <li>
                     <a href="{{ route('admin.stamp_correction_request.list') }}">

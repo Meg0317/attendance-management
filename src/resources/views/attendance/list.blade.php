@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends($isAdmin ? 'layouts.admin' : 'layouts.app')
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/attendance/list.css') }}">
@@ -12,25 +12,49 @@
 @endphp
 
 <div class="attendance-list">
-    <h2 class="attendance__heading">勤怠一覧</h2>
+    <h2 class="attendance__heading">
+        @if ($isAdmin)
+            {{ $user->name }}さんの勤怠
+        @else
+            勤怠一覧
+        @endif
+    </h2>
 
     {{-- 月切り替え --}}
     <div class="attendance-month">
-        <a href="{{ route('attendance.list', [
-            'month' => $month->copy()->subMonth()->format('Y-m')
-        ]) }}">
-            ← 前月
-        </a>
+        @if ($isAdmin)
+            <a href="{{ route('admin.attendance.staff', [
+                'user'  => $user->id,
+                'month' => $month->copy()->subMonth()->format('Y-m')
+            ]) }}">
+                ← 前月
+            </a>
+        @else
+            <a href="{{ route('attendance.list', [
+                'month' => $month->copy()->subMonth()->format('Y-m')
+            ]) }}">
+                ← 前月
+            </a>
+        @endif
 
         <div class="attendance-month__current">
             📅 {{ $displayMonth->format('Y / m') }}
         </div>
 
-        <a href="{{ route('attendance.list', [
-            'month' => $month->copy()->addMonth()->format('Y-m')
-        ]) }}">
-            翌月 →
-        </a>
+        @if ($isAdmin)
+            <a href="{{ route('admin.attendance.staff', [
+                'user'  => $user->id,
+                'month' => $month->copy()->addMonth()->format('Y-m')
+            ]) }}">
+                翌月 →
+            </a>
+        @else
+            <a href="{{ route('attendance.list', [
+                'month' => $month->copy()->addMonth()->format('Y-m')
+            ]) }}">
+                翌月 →
+            </a>
+        @endif
     </div>
 
     {{-- 余白 --}}

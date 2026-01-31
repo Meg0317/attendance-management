@@ -3,7 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\StampCorrectionRequestController;
-use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
+use App\Http\Controllers\Admin\AdminAttendanceController;
+use App\Http\Controllers\Admin\AdminStaffAttendanceController;
+use App\Http\Controllers\Admin\AdminStaffController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -82,13 +84,13 @@ Route::prefix('admin')
         )->name('admin.attendance.update');
 
         // スタッフ一覧
-        // Route::get('/staff/list',
-        //     [AdminStaffController::class, 'index']
-        // )->name('admin.staff.list');
+        Route::get('/staff/list',
+            [AdminStaffController::class, 'index']
+        )->name('admin.staff.list');
 
         // スタッフ別 勤怠一覧
         Route::get('/attendance/staff/{user}',
-            [AdminAttendanceController::class, 'staffIndex']
+            [AdminStaffAttendanceController::class, 'list']
         )->name('admin.attendance.staff');
 
 

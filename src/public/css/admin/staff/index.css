@@ -1,0 +1,78 @@
+.content__heading {
+    padding: 5px;
+    border-left: 8px solid #000000;
+}
+
+.staff-list__inner {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.staff-list__content {
+    background-color: #FFFFFF;
+}
+
+/* テーブル基本 */
+.staff-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* 見出し下の余白 */
+.staff-list .content__heading {
+    margin-bottom: 30px;
+}
+
+/* ヘッダー横線 */
+.staff-table thead tr {
+    border-bottom: 1px solid #E1E1E1;
+}
+
+.staff-table thead tr,
+.staff-table tbody tr {
+    border-bottom: 1px solid #E1E1E1;
+}
+
+.staff-table th {
+    padding: 16px;
+    text-align: left;
+    font-weight: bold;
+}
+
+.staff-table td {
+    padding: 16px;
+}
+
+.staff-table th,
+.staff-table td {
+    text-align: center;
+    padding: 16px;
+}
+
+.staff-table__center {
+    text-align: center;
+}
+
+/* 最終行の線を消したい場合（任意） */
+.staff-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* 詳細列（右寄せにしたい場合） */
+.staff-table__detail {
+    text-align: center;
+}
+
+/* 詳細リンク */
+.staff-table a {
+    color: #000000;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.staff-table__detail-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}

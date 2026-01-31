@@ -3,6 +3,11 @@
     margin: 0 auto;
 }
 
+.attendance__heading {
+    padding: 5px;
+    border-left: 8px solid #000000;
+}
+
 /* 月切り替え */
 .attendance-month {
     display: flex;

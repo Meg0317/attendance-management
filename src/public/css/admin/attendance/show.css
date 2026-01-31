@@ -6,6 +6,8 @@
 .page-title {
     font-size: 20px;
     margin-bottom: 16px;
+    padding: 5px;
+    border-left: 8px solid #000000;
 }
 
 .card {

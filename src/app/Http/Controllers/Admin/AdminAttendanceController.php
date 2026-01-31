@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 
-class AttendanceController extends Controller
+class AdminAttendanceController extends Controller
 {
     public function index(Request $request)
     {

@@ -6,6 +6,8 @@
 .page-title {
     font-size: 20px;
     margin-bottom: 16px;
+    padding: 5px;
+    border-left: 8px solid #000000;
 }
 
 .card {
@@ -36,13 +38,13 @@
 
 .value.date {
     flex-direction: row;
-    gap: 115px;
+    gap: 40px;
 }
 
 .value.time {
     flex-direction: row;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
     flex-wrap: wrap;
 }
 
