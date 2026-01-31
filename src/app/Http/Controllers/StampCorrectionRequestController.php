@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\StampCorrectionRequest;
+use App\Models\Attendance;
 
 class StampCorrectionRequestController extends Controller
 {
@@ -56,47 +57,44 @@ class StampCorrectionRequestController extends Controller
     }
 
     // 🔹 承認画面（表示）
-    public function approve($attendance_correct_request_id)
+    public function approve(StampCorrectionRequest $stampCorrectionRequest)
     {
-        $request = StampCorrectionRequest::with(['user', 'attendance'])
-            ->findOrFail($attendance_correct_request_id);
-
-        // すでに承認済みは弾く（保険）
-        if ($request->status === 1) {
-            abort(403, 'すでに承認済みです');
-        }
-
         return view('stamp_correction_request.approve', [
-            'request' => $request,
+            'stampCorrectionRequest' => $stampCorrectionRequest,
         ]);
     }
 
     // 🔹 承認処理（POST）
-    public function approveStore(Request $request)
-    {
-        DB::transaction(function () use ($request) {
+    public function approveStore(
+        StampCorrectionRequest $stampCorrectionRequest
+    ) {
+        DB::transaction(function () use ($stampCorrectionRequest) {
 
-            $stampRequest = StampCorrectionRequest::findOrFail(
-                $request->stamp_correction_request_id
-            );
-
-            if ($stampRequest->status === 1) {
+            if ($stampCorrectionRequest->status === 1) {
                 abort(403);
             }
 
             $attendance = Attendance::findOrFail(
-                $stampRequest->attendance_id
+                $stampCorrectionRequest->attendance_id
             );
 
-            // 勤怠を修正内容で更新
-            $attendance->update([
-                'clock_in'  => $stampRequest->requested_clock_in,
-                'clock_out' => $stampRequest->requested_clock_out,
-                'note'      => $stampRequest->requested_note,
-            ]);
+            $data = [];
 
-            // 承認済みに変更
-            $stampRequest->update([
+            if (!is_null($stampCorrectionRequest->requested_clock_in)) {
+                $data['clock_in'] = $stampCorrectionRequest->requested_clock_in;
+            }
+
+            if (!is_null($stampCorrectionRequest->requested_clock_out)) {
+                $data['clock_out'] = $stampCorrectionRequest->requested_clock_out;
+            }
+
+            if (!is_null($stampCorrectionRequest->requested_note)) {
+                $data['note'] = $stampCorrectionRequest->requested_note;
+            }
+
+            $attendance->update($data);
+
+            $stampCorrectionRequest->update([
                 'status' => 1,
             ]);
         });

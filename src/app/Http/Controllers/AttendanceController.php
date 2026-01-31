@@ -141,8 +141,8 @@ class AttendanceController extends Controller
         $userId = Auth::id();
 
         $month = request('month')
-            ? Carbon::createFromFormat('Y-m', request('month'))
-            : now();
+            ? Carbon::parse(request('month') . '-01')
+            : now()->startOfMonth();
 
         $start = $month->copy()->startOfMonth();
         $end   = $month->copy()->endOfMonth();
