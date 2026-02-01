@@ -39,4 +39,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(StampCorrectionRequest::class);
     }
+
+    public function isAdmin()
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function isStaff()
+    {
+        return $this->role === self::ROLE_STAFF;
+    }
 }

@@ -169,7 +169,11 @@ class AttendanceController extends Controller
      */
     public function show(Attendance $attendance)
     {
-        if ($attendance->user_id !== Auth::id()) {
+        // 管理者でなく、かつ本人でもない場合は拒否
+        if (
+            !auth()->user()->isAdmin() &&
+            $attendance->user_id !== Auth::id()
+        ) {
             abort(403);
         }
 
@@ -182,7 +186,6 @@ class AttendanceController extends Controller
 
         return view('attendance.show', compact('attendance', 'stampRequest'));
     }
-
     /**
      * 修正申請
      */
