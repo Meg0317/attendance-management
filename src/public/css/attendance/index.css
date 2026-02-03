@@ -1,20 +1,29 @@
 /* 全体レイアウト */
+.main {
+    flex: 1;
+    /* ヘッダーを除いた残り全部 */
+    background-color: #F0EFF2;
+}
+
 .attendance-container {
+    min-height: 100vh;
+    /* 画面の高さいっぱい */
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    margin-top: 60px;
-    background-color: #F0EFF2;
+    padding-top: 60px;
+    margin-top: 0;
 }
 
 /* ステータスラベル */
 .attendance-status {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
     padding: 8px 24px;
     border-radius: 20px;
     margin-bottom: 32px;
+    margin-top: 80px;
     background-color: #C8C8C8;
     color: #696969;
 }
@@ -42,12 +51,12 @@
 }
 
 .attendance-date {
-    font-size: 16px;
-    margin-bottom: 8px;
+    font-size: 40px;
+    margin-bottom: 30px;
 }
 
 .attendance-time {
-    font-size: 32px;
+    font-size: 80px;
     font-weight: bold;
 }
 
@@ -61,16 +70,17 @@
 /* ボタン共通 */
 .btn {
     padding: 14px 40px;
-    font-size: 16px;
-    border-radius: 6px;
+    font-size: 32px;
+    border-radius: 20px;
     cursor: pointer;
     border: none;
+    font-weight: bold;
 }
 
 /* 出勤・退勤 */
 .btn-attendance {
-    background-color: #000;
-    color: #fff;
+    background-color: #000000;
+    color: #FFFFFF;
 }
 
 /* 休憩 */
@@ -89,6 +99,8 @@
 
 /* 退勤後メッセージ */
 .attendance-finished-message {
-    font-size: 18px;
+    font-size: 26px;
     font-weight: bold;
+    margin-top: 30px;
+    letter-spacing: 0.15em;
 }

@@ -11,43 +11,43 @@
 </head>
 
 <body>
-<header class="header">
-    <div class="header__inner">
-        <a href="{{ route('admin.attendance.list') }}">
-            <img src="{{ asset('images/COACHTECHヘッダーロゴ.png') }}" alt="COACHTECH">
-        </a>
+    <header class="header">
+        <div class="header__inner">
+            <a href="{{ route('admin.attendance.list') }}">
+                <img src="{{ asset('images/COACHTECHヘッダーロゴ.png') }}" alt="COACHTECH">
+            </a>
 
-        <nav class="header-nav">
-            <ul class="header-nav__list">
-                <li>
-                    <a href="{{ route('admin.attendance.list') }}">
-                        勤怠一覧
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.staff.list') }}">
-                        スタッフ一覧
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.stamp_correction_request.list') }}">
-                        申請一覧
-                    </a>
-                </li>
-            </ul>
+            <nav class="header-nav">
+                <ul class="header-nav__list">
+                    <li>
+                        <a href="{{ route('admin.attendance.list') }}">
+                            勤怠一覧
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.staff.list') }}">
+                            スタッフ一覧
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.stamp_correction_request.list') }}">
+                            申請一覧
+                        </a>
+                    </li>
+                </ul>
 
-            <form action="{{ route('logout') }}" method="post">
-                @csrf
-                <button type="submit" class="header-nav__button">ログアウト</button>
-            </form>
-        </nav>
-    </div>
-</header>
+                <form action="{{ route('logout') }}" method="post">
+                    @csrf
+                    <button type="submit" class="header-nav__button">ログアウト</button>
+                </form>
+            </nav>
+        </div>
+    </header>
 
-<main class="main">
-    <div class="container">
-        @yield('content')
-    </div>
-</main>
+    <main class="main">
+        <div class="container">
+            @yield('content')
+        </div>
+    </main>
 </body>
 </html>

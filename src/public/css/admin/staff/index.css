@@ -1,3 +1,9 @@
+.main {
+    flex: 1;
+    /* ヘッダーを除いた残り全部 */
+    background-color: #F0EFF2;
+}
+
 .content__heading {
     padding: 5px;
     border-left: 8px solid #000000;

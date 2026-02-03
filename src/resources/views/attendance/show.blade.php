@@ -7,8 +7,10 @@
 @section('content')
 <div class="attendance-wrapper">
 
-<form method="POST" action="{{ route('attendance.update', $attendance->id) }}">
+<form method="POST" action="{{ route('attendance.storeOrUpdate') }}">
 @csrf
+
+<input type="hidden" name="date" value="{{ $attendance->date->format('Y-m-d') }}">
 
 @php
     $readonly = $attendance->status === 'pending';

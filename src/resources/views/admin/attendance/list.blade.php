@@ -11,27 +11,37 @@
 
     {{-- 日付切り替え --}}
     <div class="attendance-month">
-        <a href="{{ route('admin.attendance.list', ['date' => $date->copy()->subDay()->format('Y-m-d')]) }}">
+
+        {{-- 左リンク --}}
+        <a href="{{ route('admin.attendance.list', ['date'=>$date->copy()->subDay()->format('Y-m-d')]) }}">
             ← 前日
         </a>
 
-        <div class="attendance-month__current">
-            📅 {{ $date->format('Y年m月d日') }}
+        {{-- 中央：カレンダーアイコン + 日付 --}}
+        <div class="attendance-month__center">
+            <form method="GET" action="{{ route('admin.attendance.list') }}" class="attendance-date__picker">
+                <label class="calendar-label">
+                    <img src="{{ asset('images/calendar-icon.png') }}" alt="カレンダー" class="calendar-icon">
+                    <input type="date" name="date" value="{{ $date->format('Y-m-d') }}" onchange="this.form.submit()">
+                </label>
+            </form>
+            <span class="attendance-month__current">{{ $date->format('Y年m月d日') }}</span>
         </div>
 
-        <a href="{{ route('admin.attendance.list', ['date' => $date->copy()->addDay()->format('Y-m-d')]) }}">
+        {{-- 右リンク --}}
+        <a href="{{ route('admin.attendance.list', ['date'=>$date->copy()->addDay()->format('Y-m-d')]) }}">
             翌日 →
         </a>
+
     </div>
 
-    {{-- 余白 --}}
     <div class="attendance-space"></div>
 
     {{-- 勤怠テーブル --}}
     <div class="attendance-table-wrapper">
         <table class="attendance__table">
-            <thead>
-                <tr class="attendance__row">
+            <thead class="attendance-label">
+                <tr>
                     <th>名前</th>
                     <th>出勤</th>
                     <th>退勤</th>
@@ -40,40 +50,25 @@
                     <th>詳細</th>
                 </tr>
             </thead>
-
             <tbody>
                 @foreach ($attendances as $attendance)
-                    <tr>
-                        {{-- 名前 --}}
-                        <td>{{ $attendance->user->name }}</td>
-
-                        {{-- 出勤 --}}
-                        <td>{{ $attendance->clock_in?->format('H:i') ?? '' }}</td>
-
-                        {{-- 退勤 --}}
-                        <td>{{ $attendance->clock_out?->format('H:i') ?? '' }}</td>
-
-                        {{-- 休憩 --}}
-                        <td>
-                            {{ $attendance->rest_time ? gmdate('G:i', $attendance->rest_time) : '' }}
-                        </td>
-
-                        {{-- 合計 --}}
-                        <td>
-                            {{ $attendance->work_time ? gmdate('G:i', $attendance->work_time) : '' }}
-                        </td>
-
-                        {{-- 詳細 --}}
-                        <td>
-                            <a href="{{ route('admin.attendance.show', $attendance->id) }}">
-                                詳細
-                            </a>
-                        </td>
-                    </tr>
+                <tr>
+                    <td>{{ $attendance->user->name }}</td>
+                    <td>{{ $attendance->clock_in?->format('H:i') ?? '' }}</td>
+                    <td>{{ $attendance->clock_out?->format('H:i') ?? '' }}</td>
+                    <td>{{ $attendance->rest_time ? gmdate('G:i', $attendance->rest_time) : '' }}</td>
+                    <td>{{ $attendance->work_time ? gmdate('G:i', $attendance->work_time) : '' }}</td>
+                    <td>
+                        <a a class="detail-link" href="{{ route('admin.attendance.show', [
+                            'user' => $attendance->user_id,
+                            'date' => $attendance->date->format('Y-m-d'),
+                        ]) }}">詳細</a>
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
-</div>
 
+</div>
 @endsection

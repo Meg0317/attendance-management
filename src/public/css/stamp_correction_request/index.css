@@ -1,4 +1,9 @@
-/* 全体 */
+.main {
+    flex: 1;
+    /* ヘッダーを除いた残り全部 */
+    background-color: #F0EFF2;
+}
+
 .request-list {
     max-width: 900px;
     margin: 0 auto;

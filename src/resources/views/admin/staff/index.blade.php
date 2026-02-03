@@ -33,7 +33,7 @@
 
                             <td class="staff-table__detail">
                                 <div class="staff-table__detail-inner">
-                                    <a href="{{ route('admin.attendance.staff', $staff->id) }}">
+                                    <a href="{{ route('admin.attendance.staff', ['user' => $staff->id]) }}">
                                         詳細
                                     </a>
                                 </div>

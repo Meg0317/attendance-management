@@ -21,7 +21,7 @@
 
     <div class="attendance-datetime">
         <p class="attendance-date">
-            {{ now()->locale('ja')->isoFormat('YYYY年MM月DD日（ddd）') }}
+            {{ now()->locale('ja')->isoFormat('YYYY年M月D日（ddd）') }}
         </p>
         <p class="attendance-time">
             {{ now()->format('H:i') }}

@@ -1,3 +1,9 @@
+.main {
+    flex: 1;
+    /* ヘッダーを除いた残り全部 */
+    background-color: #F0EFF2;
+}
+
 .attendance-list {
     max-width: 900px;
     margin: 0 auto;
@@ -6,22 +12,65 @@
 .attendance__heading {
     padding: 5px;
     border-left: 8px solid #000000;
+    margin-top: 50px;
+    margin-bottom: 40px;
 }
 
 /* 月切り替え */
 .attendance-month {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-
-    background: #fff;
+    justify-content: space-between;
+    position: relative;
+    /* 中央固定用 */
+    background: #FFFFFF;
     padding: 15px 20px;
     border-radius: 6px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
 }
 
+.attendance-month a {
+    text-decoration: none;
+    color: #737373;
+    white-space: nowrap;
+    line-height: 24px;
+}
+
+.attendance-month__center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.calendar-label {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+
+.calendar-label input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.calendar-icon {
+    width: 24px;
+    height: 24px;
+}
+
 .attendance-month__current {
     font-weight: bold;
+    margin-left: 2px;
+    line-height: 24px;
 }
 
 /* 余白 */
@@ -31,10 +80,16 @@
 
 /* テーブル枠 */
 .attendance-table-wrapper {
-    background: #fff;
+    background: #FFFFFF;
     border-radius: 6px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
     overflow: hidden;
+    margin-bottom: 70px; 
+}
+
+.attendance-label {
+    border-bottom: solid 3px #E1E1E1;
+    color: #737373;
 }
 
 /* テーブル */
@@ -51,20 +106,42 @@
 
 /* 横線（区切り線） */
 .attendance__table tbody tr {
-    border-top: 1px solid #e0e0e0;
+    border-top: 2px solid #E1E1E1;
 }
 
 /* ヘッダー */
 .attendance__table thead {
-    background: #f7f7f7;
+    background: #FFFFFF;
 }
 
-/* 詳細ボタン */
-.attendance__detail-btn {
-    color: #007bff;
+.detail-link {
+    text-decoration: none;
+    color: inherit;
+    font-weight: bold;
+}
+
+/* エクスポートボタン */
+.export-form {
+    display: flex;
+    align-items: center;
+    margin-top: 32px;
+    justify-content: flex-end;
+}
+
+.export__btn {
+    background-color: #000000;
+    color: #FFFFFF;
+    font-weight: bold;
+    padding: 10px 28px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 30px;
     text-decoration: none;
 }
 
-.attendance__detail-btn:hover {
-    text-decoration: underline;
+.detail-link {
+    text-decoration: none;
+    color: #000000;
+    font-weight: bold;
+    font-size: 16px;
 }
