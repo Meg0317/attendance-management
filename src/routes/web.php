@@ -32,7 +32,7 @@ Route::get('/admin/login', fn () => view('admin.auth.login'))
 | 一般ユーザー・管理者 共通（ログイン必須）
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified.or.bypass'])->group(function () {
 
     /*
     | 勤怠詳細（★date基準・空日OK）
@@ -56,7 +56,7 @@ Route::middleware(['auth'])->group(function () {
 | 一般ユーザー用
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'user'])->group(function () {
+Route::middleware(['auth', 'verified.or.bypass', 'user'])->group(function () {
 
     // 出勤画面
     Route::get('/attendance', [AttendanceController::class, 'index'])
@@ -103,7 +103,7 @@ Route::middleware(['auth', 'user'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')
-    ->middleware(['auth', 'admin'])
+    ->middleware(['auth', 'verified.or.bypass', 'admin'])
     ->group(function () {
 
         Route::get('/', fn () => redirect()->route('admin.attendance.list'));
