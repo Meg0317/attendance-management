@@ -16,13 +16,14 @@
     margin-bottom: 24px;
     padding: 5px;
     border-left: 8px solid #000000;
-
+    margin-top: 50px;
+    margin-bottom: 40px;
 }
 
 /* タブ */
 .request-list__tabs {
     display: flex;
-    gap: 40px;
+    gap: 120px;
 }
 
 .request-list__tab {
@@ -33,14 +34,13 @@
 }
 
 .request-list__tab.is-active {
-    color: #000;
-    border-bottom: 2px solid #000;
+    color: #000000;
 }
 
 /* タブ下の線 */
 .request-list__border {
     margin-top: 8px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #000000;
 }
 
 /* 余白 */
@@ -56,6 +56,7 @@
 .request-list__table {
     width: 100%;
     border-collapse: collapse;
+    background-color: #FFFFFF;
 }
 
 .request-list__table th,
@@ -63,16 +64,21 @@
     padding: 16px 8px;
     text-align: left;
     border-bottom: 1px solid #ddd;
+    color: #737373;
 }
 
 .request-list__table th {
     font-weight: bold;
 }
 
+.request-list__label {
+    color: #737373;
+}
+
 /* 詳細リンク */
-.request-list__detail-link {
-    color: #000;
-    text-decoration: underline;
+.detail-link {
+    color: #000000;
+    text-decoration: none;
     font-weight: bold;
 }
 

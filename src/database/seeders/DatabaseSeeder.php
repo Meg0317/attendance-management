@@ -17,7 +17,6 @@ class DatabaseSeeder extends Seeder
             UsersTableSeeder::class,
             AttendancesTableSeeder::class,
             RestTimesTableSeeder::class,
-            StampCorrectionRequestsTableSeeder::class,
         ]);
     }
 }

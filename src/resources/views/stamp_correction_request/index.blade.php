@@ -41,7 +41,7 @@
     {{-- テーブル --}}
     <div class="request-list__table-wrapper">
         <table class="request-list__table">
-            <thead>
+            <thead class="request-list__label">
                 <tr>
                     <th>状態</th>
                     <th>名前</th>
@@ -74,14 +74,14 @@
                                 <a href="{{ route(
                                     'admin.stamp_correction_request.approve',
                                     $request
-                                ) }}">
+                                ) }}" class="detail-link">
                                     詳細
                                 </a>
                             @else
                                 <a href="{{ route(
                                     'attendance.request.confirm',
                                     $request->attendance->id
-                                ) }}">
+                                ) }}" class="detail-link">
                                     詳細
                                 </a>
                             @endif

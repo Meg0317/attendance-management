@@ -19,7 +19,7 @@ class CreateAttendancesTable extends Migration
             $table->date('date');
             $table->datetime('clock_in')->nullable();
             $table->datetime('clock_out')->nullable();
-            $table->string('status')->default('approved'); // approved / pending
+            $table->string('status')->default('normal'); // normal / pending / approved
             $table->text('note')->nullable();
             $table->string('total_work_time')->nullable();
             $table->timestamps();

@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\User;
-use App\Http\Requests\AttendanceUpdateRequest;
+use App\Models\StampCorrectionRequest;
+use App\Http\Requests\AdminAttendanceUpdateRequest;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -36,28 +37,45 @@ class AdminAttendanceController extends Controller
         $attendance = Attendance::with(['user', 'restTimes'])
             ->where('user_id', $user->id)
             ->whereDate('date', $date)
-            ->first(); // ← null OK
+            ->first();
+
+        $readonly = false;
+
+        if ($attendance) {
+            $readonly = StampCorrectionRequest::where('attendance_id', $attendance->id)
+                ->where('status', 0)
+                ->exists();
+        }
 
         return view('admin.attendance.show', [
             'attendance' => $attendance,
             'user'       => $user,
             'date'       => $date,
+            'readonly'   => $readonly,
         ]);
     }
 
     /**
      * 登録 or 更新
      */
-    public function storeOrUpdate(AttendanceUpdateRequest $request)
+    public function storeOrUpdate(AdminAttendanceUpdateRequest $request)
     {
-        $attendance = Attendance::with('restTimes')->firstOrNew([
+        $attendance = Attendance::firstOrNew([
             'user_id' => $request->user_id,
             'date'    => $request->date,
         ]);
 
-        // 承認待ちは修正不可（既存のみ）
-        if ($attendance->exists && $attendance->status === 'pending') {
-            return back();
+        // 🔒 修正申請がある日は管理者でも修正不可
+        if ($attendance->exists) {
+            $hasPendingRequest = StampCorrectionRequest::where('attendance_id', $attendance->id)
+                ->where('status', 0)
+                ->exists();
+
+            if ($hasPendingRequest) {
+                return back()->withErrors([
+                    'status' => '承認待ちのため修正はできません。',
+                ]);
+            }
         }
 
         $attendance->fill([

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.attendance')
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/attendance/show.css') }}">
@@ -23,113 +23,144 @@
 
 <div class="card">
 
-{{-- 名前 --}}
-<div class="row">
-    <div class="label">名前</div>
-    <div class="value">{{ $attendance->user->name }}</div>
-</div>
-
-{{-- 日付 --}}
-<div class="row">
-    <div class="label">日付</div>
-    <div class="value date">
-        <span>{{ $attendance->date->format('Y年') }}</span>
-        <span>{{ $attendance->date->format('n月j日') }}</span>
+    {{-- 名前 --}}
+    <div class="row">
+        <div class="label">名前</div>
+        <div class="value align-time">
+            <div class="left">{{ $attendance->user->name }}</div>
+        </div>
     </div>
-</div>
 
-{{-- 出勤・退勤 --}}
-<div class="row">
-    <div class="label">出勤・退勤</div>
-    <div class="value time">
-        @if(!$readonly)
-            <input type="time" name="clock_in"
-                value="{{ old('clock_in', optional($attendance->clock_in)->format('H:i')) }}">
-            <span>〜</span>
-            <input type="time" name="clock_out"
-                value="{{ old('clock_out', optional($attendance->clock_out)->format('H:i')) }}">
-        @else
-            <span>{{ optional($attendance->clock_in)->format('H:i') }}</span>
-            <span>〜</span>
-            <span>{{ optional($attendance->clock_out)->format('H:i') }}</span>
-        @endif
-
-        @error('clock_in')
-            <div class="error">{{ $message }}</div>
-        @enderror
-        @error('clock_out')
-            <div class="error">{{ $message }}</div>
-        @enderror
+    {{-- 日付 --}}
+    <div class="row">
+        <div class="label">日付</div>
+        <div class="value align-time">
+            <div class="left">{{ $attendance->date->format('Y年') }}</div>
+            <div class="right">{{ $attendance->date->format('n月j日') }}</div>
+        </div>
     </div>
-</div>
 
-{{-- 休憩 --}}
-<div class="row">
-    <div class="label">休憩</div>
-    <div class="value time">
-        @if(!$readonly)
-            <input type="time" name="rests[0][start]"
-                value="{{ old('rests.0.start', optional($rest1?->rest_start)->format('H:i')) }}">
-            <span>〜</span>
-            <input type="time" name="rests[0][end]"
-                value="{{ old('rests.0.end', optional($rest1?->rest_end)->format('H:i')) }}">
-        @else
-            <span>{{ optional($rest1?->rest_start)->format('H:i') }}</span>
-            <span>〜</span>
-            <span>{{ optional($rest1?->rest_end)->format('H:i') }}</span>
-        @endif
+    {{-- 出勤・退勤 --}}
+    <div class="row">
+        <div class="label">出勤・退勤</div>
+        <div class="value time">
+            @if(!$readonly)
+                <input type="time" name="clock_in"
+                    value="{{ old('clock_in', optional($attendance->clock_in)->format('H:i')) }}">
+                <span class="tilde">〜</span>
+                <input type="time" name="clock_out"
+                    value="{{ old('clock_out', optional($attendance->clock_out)->format('H:i')) }}">
+            @else
+                @if($attendance->clock_in)
+                    <span class="time-text">{{ $attendance->clock_in->format('H:i') }}</span>
+                @endif
 
-        @error('rests.0.start')
-            <div class="error">{{ $message }}</div>
-        @enderror
-        @error('rests.0.end')
-            <div class="error">{{ $message }}</div>
-        @enderror
+                @if($attendance->clock_in && $attendance->clock_out)
+                    <span class="tilde">〜</span>
+                @endif
+
+                @if($attendance->clock_out)
+                    <span class="time-text">{{ $attendance->clock_out->format('H:i') }}</span>
+                @endif
+            @endif
+        </div>
     </div>
-</div>
 
-{{-- 休憩2 --}}
-@if(!$readonly || ($rest2 && ($rest2->rest_start || $rest2->rest_end)))
-<div class="row">
-    <div class="label">休憩2</div>
-    <div class="value time">
-        @if(!$readonly)
-            <input type="time" name="rests[1][start]"
-                value="{{ old('rests.1.start', optional($rest2?->rest_start)->format('H:i')) }}">
-            <span>〜</span>
-            <input type="time" name="rests[1][end]"
-                value="{{ old('rests.1.end', optional($rest2?->rest_end)->format('H:i')) }}">
-        @else
-            <span>{{ optional($rest2?->rest_start)->format('H:i') }}</span>
-            <span>〜</span>
-            <span>{{ optional($rest2?->rest_end)->format('H:i') }}</span>
-        @endif
+    @error('clock_in')
+    <div class="error">{{ $message }}</div>
+    @enderror
+    @error('clock_out')
+    <div class="error">{{ $message }}</div>
+    @enderror
 
-        @error('rests.1.start')
-            <div class="error">{{ $message }}</div>
-        @enderror
-        @error('rests.1.end')
-            <div class="error">{{ $message }}</div>
-        @enderror
+    {{-- 休憩 --}}
+    <div class="row">
+        <div class="label">休憩</div>
+        <div class="value time">
+            @if(!$readonly)
+                <input type="time" name="rests[0][start]"
+                    value="{{ old('rests.0.start', optional($rest1?->rest_start)->format('H:i')) }}">
+                <span class="tilde">〜</span>
+                <input type="time" name="rests[0][end]"
+                    value="{{ old('rests.0.end', optional($rest1?->rest_end)->format('H:i')) }}">
+            @else
+                @if($rest1?->rest_start)
+                    <span class="time-text">{{ $rest1->rest_start->format('H:i') }}</span>
+                @endif
+
+                @if($rest1?->rest_start && $rest1?->rest_end)
+                    <span class="tilde">〜</span>
+                @endif
+
+                @if($rest1?->rest_end)
+                    <span class="time-text">{{ $rest1->rest_end->format('H:i') }}</span>
+                @endif
+            @endif
+        </div>
     </div>
-</div>
-@endif
 
-{{-- 備考 --}}
-<div class="row">
-    <div class="label">備考</div>
-    <div class="value">
-        @if(!$readonly)
-            <textarea name="note">{{ old('note', $attendance->note) }}</textarea>
-        @else
-            {{ $attendance->note }}
-        @endif
+    @error('rests.0.start')
+    <div class="error">{{ $message }}</div>
+    @enderror
+    @error('rests.0.end')
+    <div class="error">{{ $message }}</div>
+    @enderror
 
-        @error('note')
-            <div class="error">{{ $message }}</div>
-        @enderror
+    {{-- 休憩2（空なら完全非表示） --}}
+    @if(!$readonly || ($rest2 && ($rest2->rest_start || $rest2->rest_end)))
+    <div class="row">
+        <div class="label">休憩2</div>
+        <div class="value time">
+
+            {{-- 修正画面：常に枠を出す --}}
+            @if(!$readonly)
+                <input type="time" name="rests[1][start]"
+                    value="{{ old('rests.1.start', optional($rest2?->rest_start)->format('H:i')) }}">
+                <span class="tilde">〜</span>
+                <input type="time" name="rests[1][end]"
+                    value="{{ old('rests.1.end', optional($rest2?->rest_end)->format('H:i')) }}">
+
+            {{-- 確認画面：値があるものだけ表示 --}}
+            @else
+                @if($rest2?->rest_start)
+                    <span class="time-text">{{ $rest2->rest_start->format('H:i') }}</span>
+                @endif
+
+                @if($rest2?->rest_start && $rest2?->rest_end)
+                    <span class="tilde">〜</span>
+                @endif
+
+                @if($rest2?->rest_end)
+                    <span class="time-text">{{ $rest2->rest_end->format('H:i') }}</span>
+                @endif
+            @endif
+
+        </div>
     </div>
-</div>
+
+    @error('rests.1.start')
+    <div class="error">{{ $message }}</div>
+    @enderror
+    @error('rests.1.end')
+    <div class="error">{{ $message }}</div>
+    @enderror
+    @endif
+
+    {{-- 備考 --}}
+    <div class="row">
+        <div class="label">備考</div>
+        <div class="value">
+            @if(!$readonly)
+                <textarea name="note">{{ old('note', $attendance->note) }}</textarea>
+            @else
+                {{ $attendance->note }}
+            @endif
+        </div>
+    </div>
+
+    @error('note')
+    <div class="error">{{ $message }}</div>
+    @enderror
 
 </div>
 

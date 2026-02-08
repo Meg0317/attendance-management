@@ -1,7 +1,7 @@
 .main {
     flex: 1;
-    /* ヘッダーを除いた残り全部 */
     background-color: #F0EFF2;
+    padding-top: 60px;
 }
 
 .attendance-wrapper {
@@ -10,29 +10,28 @@
 }
 
 .page-title {
-    font-size: 20px;
     margin-bottom: 16px;
-    padding: 5px;
-    border-left: 8px solid #000000;
 }
 
 .card {
     background: #fff;
-    border-radius: 8px;
-    padding: 8px 0;
+    border: 1px solid #ddd;
 }
 
-/* 行 */
 .row {
     display: grid;
-    grid-template-columns: 180px 1fr;
-    align-items: center;
-    padding: 14px 24px;
+    grid-template-columns: 220px 420px;
+    padding: 16px 32px;
     border-bottom: 1px solid #e0e0e0;
+    align-items: center;
+}
+
+.row:last-of-type {
+    border-bottom: none;
 }
 
 .label {
-    color: #555;
+    color: #737373;
 }
 
 .value {
@@ -40,48 +39,56 @@
     align-items: center;
 }
 
-.value.date {
-    justify-content: space-between;
-    max-width: 320px;
+.value.align-time {
+    gap: 16px;
+}
+
+.value.align-time .left {
+    width: 96px;
+}
+
+.value.align-time .right {
+    width: 96px;
+    text-align: right;
 }
 
 .value.time {
     gap: 16px;
 }
 
-.value.time input {
+.value.time input,
+.time-text {
     width: 96px;
     height: 32px;
     text-align: center;
+}
+
+.value.time input {
     border: 1px solid #ccc;
 }
 
-/* 時計アイコン削除 */
 input[type="time"]::-webkit-calendar-picker-indicator {
     display: none;
 }
 
-/* 備考 */
 textarea {
-    width: 320px;
+    width: 240px;
     height: 80px;
     border: 1px solid #ccc;
     padding: 6px;
 }
 
-/* エラー */
 .error {
-    margin-left: 180px;
-    color: #ff3333;
+    margin-left: calc(220px + 32px);
+    padding: 4px 0 8px;
     font-size: 13px;
-    margin-bottom: 8px;
+    color: #ff3333;
 }
 
-/* ボタン */
 .actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 24px;
+    padding: 16px 32px;
 }
 
 .btn {
@@ -90,10 +97,6 @@ textarea {
     padding: 10px 28px;
     border: none;
     cursor: pointer;
-}
-
-.pending {
-    color: #FF000080;
 }
 
 .alert.success {

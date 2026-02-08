@@ -7,57 +7,91 @@
 .attendance-wrapper {
     max-width: 900px;
     margin: 0 auto;
+    padding: 0;
+    /* 念のため */
 }
 
 .page-title {
-    font-size: 20px;
-    margin-bottom: 16px;
     padding: 5px;
     border-left: 8px solid #000000;
+    margin-top: 50px;
+    margin-bottom: 40px;
 }
 
+/* =====================
+   大枠
+===================== */
 .card {
-    background: #fff;
-    border-radius: 8px;
-    padding: 8px 0;
+    border: 2px solid #E1E1E1;
+    background-color: #FFFFFF;
 }
 
-/* 行 */
+/* =====================
+   行
+===================== */
 .row {
     display: grid;
-    grid-template-columns: 180px 1fr;
-    align-items: start;
-    padding: 14px 24px;
+    grid-template-columns: 220px 420px;
+    padding: 16px 32px;
     border-bottom: 1px solid #e0e0e0;
+    align-items: center;
 }
 
+/* 最後の行の下線は消す（好み） */
+.row:last-of-type {
+    border-bottom: none;
+}
+
+/* =====================
+   左ラベル
+===================== */
 .label {
-    color: #555;
+    color: #737373;
 }
 
-/* 値 */
+/* =====================
+   値（共通）
+===================== */
 .value {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.value.date {
-    flex-direction: row;
-    gap: 40px;
-}
-
-.value.time {
-    flex-direction: row;
     align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
 }
 
-.value.time input {
+/* =====================
+   時間枠と同じ基準揃え
+   （名前・日付用）
+===================== */
+.value.align-time {
+    gap: 16px;
+}
+
+.value.align-time .left {
+    width: 96px;
+    /* time input と同じ */
+}
+
+.value.align-time .right {
+    width: 96px;
+    text-align: right;
+}
+
+/* =====================
+   時間
+===================== */
+.value.time {
+    gap: 16px;
+}
+
+/* time input & 表示 */
+.value.time input,
+.time-text {
     width: 96px;
     height: 32px;
     text-align: center;
+}
+
+/* input */
+.value.time input {
     border: 1px solid #ccc;
 }
 
@@ -66,7 +100,21 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     display: none;
 }
 
-/* 備考 */
+.time-text:empty {
+    display: none;
+}
+
+.tilde {
+    margin: 0 6px;
+}
+
+.value.time:has(.time-text:empty) .tilde {
+    display: none;
+}
+
+/* =====================
+   textarea
+===================== */
 textarea {
     width: 240px;
     height: 80px;
@@ -74,36 +122,35 @@ textarea {
     padding: 6px;
 }
 
-/* エラー */
+/* =====================
+   エラー表示
+===================== */
 .error {
-    color: #ff3333;
+    margin-left: calc(220px + 32px);
+    padding: 4px 0 8px;
     font-size: 13px;
+    color: #ff3333;
 }
 
-/* ボタン */
+/* =====================
+   ボタン
+===================== */
 .actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 24px;
+    padding: 16px 32px;
 }
 
+/* 承認待ちテキスト */
+.actions.pending {
+    color: #FF000080;
+}
+
+/* ボタン */
 .btn {
     background: #000000;
     color: #FFFFFF;
     padding: 10px 28px;
     border: none;
     cursor: pointer;
-}
-
-.pending {
-    color: #FF000080;
-}
-
-.btn.approved {
-    background-color: #FFFFFF;
-    color: #696969;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: default;
-    pointer-events: none;
 }
