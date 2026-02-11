@@ -7,8 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class StampCorrectionRequest extends Model
 {
-    use HasFactory;
-    protected $guarded = ['id',];
+    protected $fillable = [
+        'user_id',
+        'attendance_id',
+        'before_data',
+        'after_data',
+        'reason',
+        'status',
+    ];
+
+    protected $casts = [
+        'before_data' => 'array',
+        'after_data'  => 'array',
+    ];
 
     public function user() {
         return $this->belongsTo(User::class);

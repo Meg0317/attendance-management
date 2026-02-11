@@ -13,7 +13,14 @@
 <input type="hidden" name="date" value="{{ $attendance->date->format('Y-m-d') }}">
 
 @php
-    $readonly = $attendance->status === 'pending';
+    // 承認待ち表示用データ
+    $after = $latestRequest->after_data ?? [];
+
+    $afterRests = collect($after['rests'] ?? []);
+    $afterRest1 = $afterRests->get(0);
+    $afterRest2 = $afterRests->get(1);
+
+    // 通常表示用データ
     $rests = $attendance->restTimes->keyBy('order');
     $rest1 = $rests->get(1);
     $rest2 = $rests->get(2);
@@ -51,16 +58,16 @@
                 <input type="time" name="clock_out"
                     value="{{ old('clock_out', optional($attendance->clock_out)->format('H:i')) }}">
             @else
-                @if($attendance->clock_in)
-                    <span class="time-text">{{ $attendance->clock_in->format('H:i') }}</span>
+                @if(!empty($after['clock_in']))
+                    <span class="time-text">{{ $after['clock_in'] }}</span>
                 @endif
 
-                @if($attendance->clock_in && $attendance->clock_out)
+                @if(!empty($after['clock_in']) && !empty($after['clock_out']))
                     <span class="tilde">〜</span>
                 @endif
 
-                @if($attendance->clock_out)
-                    <span class="time-text">{{ $attendance->clock_out->format('H:i') }}</span>
+                @if(!empty($after['clock_out']))
+                    <span class="time-text">{{ $after['clock_out'] }}</span>
                 @endif
             @endif
         </div>
@@ -73,6 +80,7 @@
     <div class="error">{{ $message }}</div>
     @enderror
 
+
     {{-- 休憩 --}}
     <div class="row">
         <div class="label">休憩</div>
@@ -84,16 +92,16 @@
                 <input type="time" name="rests[0][end]"
                     value="{{ old('rests.0.end', optional($rest1?->rest_end)->format('H:i')) }}">
             @else
-                @if($rest1?->rest_start)
-                    <span class="time-text">{{ $rest1->rest_start->format('H:i') }}</span>
+                @if(!empty($afterRest1['start']))
+                    <span class="time-text">{{ $afterRest1['start'] }}</span>
                 @endif
 
-                @if($rest1?->rest_start && $rest1?->rest_end)
+                @if(!empty($afterRest1['start']) && !empty($afterRest1['end']))
                     <span class="tilde">〜</span>
                 @endif
 
-                @if($rest1?->rest_end)
-                    <span class="time-text">{{ $rest1->rest_end->format('H:i') }}</span>
+                @if(!empty($afterRest1['end']))
+                    <span class="time-text">{{ $afterRest1['end'] }}</span>
                 @endif
             @endif
         </div>
@@ -106,37 +114,34 @@
     <div class="error">{{ $message }}</div>
     @enderror
 
-    {{-- 休憩2（空なら完全非表示） --}}
-    @if(!$readonly || ($rest2 && ($rest2->rest_start || $rest2->rest_end)))
+
+    {{-- 休憩2（空なら非表示） --}}
+    @if(!$readonly || (!empty($afterRest2['start']) || !empty($afterRest2['end'])))
     <div class="row">
         <div class="label">休憩2</div>
         <div class="value time">
-
-            {{-- 修正画面：常に枠を出す --}}
             @if(!$readonly)
                 <input type="time" name="rests[1][start]"
                     value="{{ old('rests.1.start', optional($rest2?->rest_start)->format('H:i')) }}">
                 <span class="tilde">〜</span>
                 <input type="time" name="rests[1][end]"
                     value="{{ old('rests.1.end', optional($rest2?->rest_end)->format('H:i')) }}">
-
-            {{-- 確認画面：値があるものだけ表示 --}}
             @else
-                @if($rest2?->rest_start)
-                    <span class="time-text">{{ $rest2->rest_start->format('H:i') }}</span>
+                @if(!empty($afterRest2['start']))
+                    <span class="time-text">{{ $afterRest2['start'] }}</span>
                 @endif
 
-                @if($rest2?->rest_start && $rest2?->rest_end)
+                @if(!empty($afterRest2['start']) && !empty($afterRest2['end']))
                     <span class="tilde">〜</span>
                 @endif
 
-                @if($rest2?->rest_end)
-                    <span class="time-text">{{ $rest2->rest_end->format('H:i') }}</span>
+                @if(!empty($afterRest2['end']))
+                    <span class="time-text">{{ $afterRest2['end'] }}</span>
                 @endif
             @endif
-
         </div>
     </div>
+    @endif
 
     @error('rests.1.start')
     <div class="error">{{ $message }}</div>
@@ -144,16 +149,16 @@
     @error('rests.1.end')
     <div class="error">{{ $message }}</div>
     @enderror
-    @endif
+
 
     {{-- 備考 --}}
     <div class="row">
         <div class="label">備考</div>
         <div class="value">
             @if(!$readonly)
-                <textarea name="note">{{ old('note', $attendance->note) }}</textarea>
+                <textarea name="note">{{ old('note') }}</textarea>
             @else
-                {{ $attendance->note }}
+                {{ $latestRequest->reason ?? '' }}
             @endif
         </div>
     </div>

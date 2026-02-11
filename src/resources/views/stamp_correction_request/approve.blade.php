@@ -8,9 +8,18 @@
 <div class="attendance-wrapper">
 
 @php
-    /** @var \App\Models\StampCorrectionRequest $stampCorrectionRequest */
     $attendance = $stampCorrectionRequest->attendance;
 
+    // 承認待ちかどうか
+    $isPending = $stampCorrectionRequest->status === 0;
+
+    // after_data（承認待ち用）
+    $after = $stampCorrectionRequest->after_data ?? [];
+    $afterRests = collect($after['rests'] ?? []);
+    $afterRest1 = $afterRests->get(0);
+    $afterRest2 = $afterRests->get(1);
+
+    // attendance 本体（承認済み用）
     $rests = $attendance->restTimes->keyBy('order');
     $rest1 = $rests->get(1);
     $rest2 = $rests->get(2);
@@ -41,19 +50,31 @@
     <div class="row">
         <div class="label">出勤・退勤</div>
         <div class="value time">
+            @if($isPending)
+                @if(!empty($after['clock_in']))
+                    <span class="time-text">{{ $after['clock_in'] }}</span>
+                @endif
 
-            @if($attendance->clock_in)
-                <span class="time-text">{{ $attendance->clock_in->format('H:i') }}</span>
+                @if(!empty($after['clock_in']) && !empty($after['clock_out']))
+                    <span class="tilde">〜</span>
+                @endif
+
+                @if(!empty($after['clock_out']))
+                    <span class="time-text">{{ $after['clock_out'] }}</span>
+                @endif
+            @else
+                @if($attendance->clock_in)
+                    <span class="time-text">{{ $attendance->clock_in->format('H:i') }}</span>
+                @endif
+
+                @if($attendance->clock_in && $attendance->clock_out)
+                    <span class="tilde">〜</span>
+                @endif
+
+                @if($attendance->clock_out)
+                    <span class="time-text">{{ $attendance->clock_out->format('H:i') }}</span>
+                @endif
             @endif
-
-            @if($attendance->clock_in && $attendance->clock_out)
-                <span class="tilde">〜</span>
-            @endif
-
-            @if($attendance->clock_out)
-                <span class="time-text">{{ $attendance->clock_out->format('H:i') }}</span>
-            @endif
-
         </div>
     </div>
 
@@ -61,49 +82,76 @@
     <div class="row">
         <div class="label">休憩</div>
         <div class="value time">
+            @if($isPending)
+                @if(!empty($afterRest1['start']))
+                    <span class="time-text">{{ $afterRest1['start'] }}</span>
+                @endif
 
-            @if($rest1?->rest_start)
-                <span class="time-text">{{ $rest1->rest_start->format('H:i') }}</span>
+                @if(!empty($afterRest1['start']) && !empty($afterRest1['end']))
+                    <span class="tilde">〜</span>
+                @endif
+
+                @if(!empty($afterRest1['end']))
+                    <span class="time-text">{{ $afterRest1['end'] }}</span>
+                @endif
+            @else
+                @if($rest1?->rest_start)
+                    <span class="time-text">{{ $rest1->rest_start->format('H:i') }}</span>
+                @endif
+
+                @if($rest1?->rest_start && $rest1?->rest_end)
+                    <span class="tilde">〜</span>
+                @endif
+
+                @if($rest1?->rest_end)
+                    <span class="time-text">{{ $rest1->rest_end->format('H:i') }}</span>
+                @endif
             @endif
-
-            @if($rest1?->rest_start && $rest1?->rest_end)
-                <span class="tilde">〜</span>
-            @endif
-
-            @if($rest1?->rest_end)
-                <span class="time-text">{{ $rest1->rest_end->format('H:i') }}</span>
-            @endif
-
         </div>
     </div>
 
-    {{-- 休憩2（値がある時だけ表示） --}}
-    @if($rest2 && ($rest2->rest_start || $rest2->rest_end))
+    {{-- 休憩2（値がある場合のみ） --}}
+    @if(
+        ($isPending && (!empty($afterRest2['start']) || !empty($afterRest2['end'])))
+        || (!$isPending && $rest2 && ($rest2->rest_start || $rest2->rest_end))
+    )
     <div class="row">
         <div class="label">休憩2</div>
         <div class="value time">
+            @if($isPending)
+                @if(!empty($afterRest2['start']))
+                    <span class="time-text">{{ $afterRest2['start'] }}</span>
+                @endif
 
-            @if($rest2?->rest_start)
-                <span class="time-text">{{ $rest2->rest_start->format('H:i') }}</span>
+                @if(!empty($afterRest2['start']) && !empty($afterRest2['end']))
+                    <span class="tilde">〜</span>
+                @endif
+
+                @if(!empty($afterRest2['end']))
+                    <span class="time-text">{{ $afterRest2['end'] }}</span>
+                @endif
+            @else
+                @if($rest2?->rest_start)
+                    <span class="time-text">{{ $rest2->rest_start->format('H:i') }}</span>
+                @endif
+
+                @if($rest2?->rest_start && $rest2?->rest_end)
+                    <span class="tilde">〜</span>
+                @endif
+
+                @if($rest2?->rest_end)
+                    <span class="time-text">{{ $rest2->rest_end->format('H:i') }}</span>
+                @endif
             @endif
-
-            @if($rest2?->rest_start && $rest2?->rest_end)
-                <span class="tilde">〜</span>
-            @endif
-
-            @if($rest2?->rest_end)
-                <span class="time-text">{{ $rest2->rest_end->format('H:i') }}</span>
-            @endif
-
         </div>
     </div>
     @endif
 
-    {{-- 備考（申請理由） --}}
+    {{-- 備考 --}}
     <div class="row">
         <div class="label">備考</div>
         <div class="value">
-            {{ $attendance->note }}
+            {{ $stampCorrectionRequest->reason }}
         </div>
     </div>
 

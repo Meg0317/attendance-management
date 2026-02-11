@@ -107,14 +107,15 @@
             <div class="row">
                 <div class="label">備考</div>
                 <div class="value">
-                    <textarea name="note">{{ old('note', $attendance?->note) }}</textarea>
+                    @php
+                        $noteValue = old(
+                            'note',
+                            is_string($attendance?->note) ? $attendance->note : ''
+                        );
+                    @endphp
+                    <textarea name="note">{{ $noteValue }}</textarea>
                 </div>
             </div>
-
-            @error('note')
-            <div class="error">{{ $message }}</div>
-            @enderror
-
         </div>
 
         @if(!$readonly)

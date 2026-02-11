@@ -32,9 +32,18 @@ class StampCorrectionRequestController extends Controller
     // 一般ユーザー詳細
     public function show(StampCorrectionRequest $stampRequest)
     {
+        // 承認待ち → 確認画面（修正不可）
+        if ($stampRequest->status === 0) {
+            return redirect()->route(
+                'attendance.request.confirm',
+                $stampRequest->attendance_id
+            );
+        }
+
+        // 承認済み → 通常の勤怠詳細（修正可）
         return redirect()->route(
-            'attendance.request.confirm',
-            $stampRequest->attendance_id
+            'attendance.detail',
+            $stampRequest->attendance->date->format('Y-m-d')
         );
     }
 
@@ -65,42 +74,62 @@ class StampCorrectionRequestController extends Controller
     }
 
     // 🔹 承認処理（POST）
-    public function approveStore(
-        StampCorrectionRequest $stampCorrectionRequest
-    ) {
+    public function approveStore(StampCorrectionRequest $stampCorrectionRequest)
+    {
         DB::transaction(function () use ($stampCorrectionRequest) {
 
             if ($stampCorrectionRequest->status === 1) {
                 abort(403);
             }
 
-            $attendance = Attendance::findOrFail(
-                $stampCorrectionRequest->attendance_id
-            );
+            $attendance = Attendance::with('restTimes')
+                ->findOrFail($stampCorrectionRequest->attendance_id);
 
-            $data = [];
+            $after = $stampCorrectionRequest->after_data;
 
-            if (!is_null($stampCorrectionRequest->requested_clock_in)) {
-                $data['clock_in'] = $stampCorrectionRequest->requested_clock_in;
+            /** =========================
+             * 出勤・退勤
+             ========================= */
+            $attendance->update([
+                'clock_in'  => $after['clock_in'],
+                'clock_out' => $after['clock_out'],
+                'note'      => $stampCorrectionRequest->reason,
+                'status'    => 'normal',
+            ]);
+
+            /** =========================
+             * 休憩
+             ========================= */
+            foreach ($after['rests'] ?? [] as $index => $rest) {
+                $order = $index + 1;
+
+                // 両方空 → 削除
+                if (empty($rest['start']) && empty($rest['end'])) {
+                    $attendance->restTimes()
+                        ->where('order', $order)
+                        ->delete();
+                    continue;
+                }
+
+                // 更新 or 作成
+                $attendance->restTimes()->updateOrCreate(
+                    ['order' => $order],
+                    [
+                        'rest_start' => $rest['start'],
+                        'rest_end'   => $rest['end'],
+                    ]
+                );
             }
 
-            if (!is_null($stampCorrectionRequest->requested_clock_out)) {
-                $data['clock_out'] = $stampCorrectionRequest->requested_clock_out;
-            }
-
-            if (!is_null($stampCorrectionRequest->requested_note)) {
-                $data['note'] = $stampCorrectionRequest->requested_note;
-            }
-
-            $attendance->update($data);
-
+            /** =========================
+             * 申請を承認済みに
+             ========================= */
             $stampCorrectionRequest->update([
                 'status' => 1,
             ]);
         });
 
         return redirect()
-            ->route('admin.stamp_correction_request.list')
-            ->with('success', '修正申請を承認しました');
+            ->route('admin.stamp_correction_request.list');
     }
 }

@@ -82,113 +82,116 @@ class AttendanceController extends Controller
                     'user_id' => Auth::id(),
                     'date'    => $date,
                 ],
-                [
-                    'status' => 'normal',
-                ]
+                ['status' => 'normal']
             );
 
+        // 🔑 最新の修正申請
+        $latestRequest = StampCorrectionRequest::where('attendance_id', $attendance->id)
+            ->latest()
+            ->first();
+
+        // 🔑 承認待ちなら readonly
+        $readonly = $latestRequest?->status === 0;
+
         return view('attendance.show', [
-            'attendance' => $attendance,
-            'user'       => Auth::user(),
-            'date'       => $date,
+            'attendance'     => $attendance,
+            'latestRequest'  => $latestRequest,
+            'readonly'       => $readonly,
+            'user'           => Auth::user(),
+            'date'           => $date,
         ]);
     }
+
 
     /**
      * 修正申請（登録 or 更新）
      */
     public function storeOrUpdate(AttendanceUpdateRequest $request)
-    {
-        // 空文字 → null 正規化用
-        $normalize = fn ($v) => $v === '' ? null : $v;
-
-        // 何も入力されていない送信は無視
+    { 
+        // 何も入力がなければ何もしない
         if (
             empty($request->clock_in) &&
             empty($request->clock_out) &&
+            empty($request->rests) &&
             empty($request->note)
         ) {
             return back();
         }
 
+        // 勤怠は「存在保証」だけ
         $attendance = Attendance::with('restTimes')
-            ->firstOrNew([
-                'user_id' => Auth::id(),
-                'date'    => $request->date,
-            ]);
-
-        /** =========================
-         * 変更前の値
-         ========================= */
-        $beforeClockIn  = optional($attendance->clock_in)?->format('H:i');
-        $beforeClockOut = optional($attendance->clock_out)?->format('H:i');
-        $beforeNote     = $attendance->note;
-
-        /** =========================
-         * Attendance 更新
-         ========================= */
-        $attendance->fill([
-            'clock_in'  => $normalize($request->clock_in),
-            'clock_out' => $normalize($request->clock_out),
-            'note'      => $normalize($request->note),
-            'status'    => 'pending',
-        ]);
-
-        $attendance->save();
-
-        /** =========================
-         * 休憩時間 更新
-         ========================= */
-        foreach ($request->rests ?? [] as $index => $rest) {
-            if (empty($rest['start']) && empty($rest['end'])) {
-                continue;
-            }
-
-            $attendance->restTimes()->updateOrCreate(
-                ['order' => $index + 1],
+            ->firstOrCreate(
                 [
-                    'rest_start' => $rest['start'] ?? null,
-                    'rest_end'   => $rest['end'] ?? null,
+                    'user_id' => Auth::id(),
+                    'date'    => $request->date,
+                ],
+                [
+                    'status' => 'pending',
                 ]
             );
-        }
 
-        /** =========================
-         * 実際の変更判定（null / 空文字対策済）
-         ========================= */
-        $changed =
-            $normalize($beforeClockIn)  !== $normalize($request->clock_in) ||
-            $normalize($beforeClockOut) !== $normalize($request->clock_out) ||
-            $normalize($beforeNote)     !== $normalize($request->note);
-
-        /** =========================
-         * 既存 pending 確認
-         ========================= */
+        // すでに承認待ちがあれば二重申請させない
         $alreadyPending = StampCorrectionRequest::where('attendance_id', $attendance->id)
             ->where('status', 0)
             ->exists();
 
-        /** =========================
-         * 修正あり + 備考あり のみ申請作成
-         ========================= */
-        if (
-            $changed &&
-            !$alreadyPending &&
-            filled($request->note)
-        ) {
-            StampCorrectionRequest::create([
-                'user_id'       => Auth::id(),
-                'attendance_id' => $attendance->id,
-                'before_value'  => $beforeClockIn,
-                'after_value'   => $request->clock_in,
-                'reason'        => $request->note,
-                'status'        => 0,
-            ]);
+        if ($alreadyPending) {
+            return back();
         }
 
+        /** =========================
+         * before_data
+         ========================= */
+        $beforeData = [
+            'clock_in'  => optional($attendance->clock_in)?->format('H:i'),
+            'clock_out' => optional($attendance->clock_out)?->format('H:i'),
+            'rests'     => $attendance->restTimes
+                ->sortBy('order')
+                ->values()
+                ->map(fn ($r) => [
+                    'start' => optional($r->rest_start)?->format('H:i'),
+                    'end'   => optional($r->rest_end)?->format('H:i'),
+                ])
+                ->toArray(),
+        ];
+
+        /** =========================
+         * after_data
+         ========================= */
+        $afterData = [
+            'clock_in'  => $request->clock_in,
+            'clock_out' => $request->clock_out,
+            'rests'     => collect($request->rests ?? [])
+                ->map(fn ($r) => [
+                    'start' => $r['start'] ?? null,
+                    'end'   => $r['end'] ?? null,
+                ])
+                ->toArray(),
+        ];
+
+        /** =========================
+         * 修正申請を 1 レコード作成
+         ========================= */
+        StampCorrectionRequest::create([
+            'user_id'       => Auth::id(),
+            'attendance_id' => $attendance->id,
+            'before_data'   => $beforeData,
+            'after_data'    => $afterData,
+            'reason'        => $request->note,
+            'status'        => 0,
+        ]);
+
+        // 勤怠は承認待ち状態に
+        $attendance->update([
+            'status' => 'pending',
+        ]);
+
         return redirect()
-            ->route('attendance.detail', $attendance->date->format('Y-m-d'));
+        ->route('attendance.detail', [
+            'date' => $attendance->date->format('Y-m-d'),
+        ]);
     }
+
 
     /**
      * 申請確認
@@ -199,21 +202,8 @@ class AttendanceController extends Controller
             abort(403);
         }
 
-        $attendance->load([
-            'user',
-            'restTimes' => fn ($q) => $q->orderBy('order'),
-        ]);
-
-        $stampRequest = StampCorrectionRequest::where('attendance_id', $attendance->id)
-            ->where('status', 0)
-            ->latest()
-            ->first();
-
-        return view('attendance.show', [
-            'attendance'   => $attendance,
-            'user'         => Auth::user(),
-            'date'         => $attendance->date,
-            'stampRequest' => $stampRequest,
+        return redirect()->route('attendance.detail', [
+            'date' => $attendance->date->format('Y-m-d'),
         ]);
     }
 }
