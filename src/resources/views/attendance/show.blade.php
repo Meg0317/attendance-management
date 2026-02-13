@@ -156,9 +156,9 @@
         <div class="label">備考</div>
         <div class="value">
             @if(!$readonly)
-                <textarea name="note">{{ old('note') }}</textarea>
+                <textarea name="note">{{ old('note', $attendance->note) }}</textarea>
             @else
-                {{ $latestRequest->reason ?? '' }}
+                {{ $latestRequest->reason ?? $attendance->note ?? '' }}
             @endif
         </div>
     </div>
