@@ -91,7 +91,7 @@ class AttendanceController extends Controller
             ->first();
 
         // 🔑 承認待ちなら readonly
-        $readonly = $latestRequest?->status === 0;
+        $readonly = $latestRequest?->status === StampCorrectionRequest::STATUS_PENDING;
 
         return view('attendance.show', [
             'attendance'     => $attendance,
@@ -107,7 +107,7 @@ class AttendanceController extends Controller
      * 修正申請（登録 or 更新）
      */
     public function storeOrUpdate(AttendanceUpdateRequest $request)
-    { 
+    {
         // 何も入力がなければ何もしない
         if (
             empty($request->clock_in) &&
@@ -132,7 +132,7 @@ class AttendanceController extends Controller
 
         // すでに承認待ちがあれば二重申請させない
         $alreadyPending = StampCorrectionRequest::where('attendance_id', $attendance->id)
-            ->where('status', 0)
+            ->where('status', StampCorrectionRequest::STATUS_PENDING)
             ->exists();
 
         if ($alreadyPending) {
@@ -178,7 +178,7 @@ class AttendanceController extends Controller
             'before_data'   => $beforeData,
             'after_data'    => $afterData,
             'reason'        => $request->note,
-            'status'        => 0,
+            'status'        => StampCorrectionRequest::STATUS_PENDING,
         ]);
 
         // 勤怠は承認待ち状態に

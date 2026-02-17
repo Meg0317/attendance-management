@@ -20,9 +20,4 @@ class RestTime extends Model
     {
         return $this->belongsTo(Attendance::class);
     }
-
-    public function stampCorrectionRequests()
-    {
-        return $this->hasMany(StampCorrectionRequest::class);
-    }
 }

@@ -21,15 +21,14 @@ class StampCorrectionRequest extends Model
         'after_data'  => 'array',
     ];
 
+    const STATUS_PENDING  = 0; // 承認待ち
+    const STATUS_APPROVED = 1; // 承認
+
     public function user() {
         return $this->belongsTo(User::class);
     }
 
     public function attendance() {
         return $this->belongsTo(Attendance::class);
-    }
-
-    public function restTime() {
-        return $this->belongsTo(RestTime::class);
     }
 }
