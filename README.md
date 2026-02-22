@@ -59,7 +59,7 @@ DB_PASSWORD=laravel_pass
 
 - 一般ユーザー
 
-- メールアドレス：user1@example.com
+- メールアドレス：reina.n@coachtech.com
 
 - パスワード：password
 

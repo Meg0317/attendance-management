@@ -65,7 +65,7 @@ class AdminAttendanceController extends Controller
             'date'    => $request->date,
         ]);
 
-        // 🔒 修正申請がある日は管理者でも修正不可
+        //  修正申請がある日は管理者でも修正不可
         if ($attendance->exists) {
             $hasPendingRequest = StampCorrectionRequest::where('attendance_id', $attendance->id)
                 ->where('status', 0)
@@ -109,7 +109,7 @@ class AdminAttendanceController extends Controller
      */
     public function exportCsv(Request $request)
     {
-        $month  = Carbon::createFromFormat('Y-m', $request->month);
+        $month  = Carbon::parse($request->month);
         $userId = $request->user;
 
         $attendances = Attendance::where('user_id', $userId)
@@ -123,14 +123,16 @@ class AdminAttendanceController extends Controller
         $headers = ['日付', '出勤', '退勤', '休憩', '合計'];
 
         return new StreamedResponse(function () use ($headers, $attendances) {
+
             $fp = fopen('php://output', 'w');
 
             mb_convert_variables('SJIS-win', 'UTF-8', $headers);
             fputcsv($fp, $headers);
 
             foreach ($attendances as $attendance) {
+
                 $row = [
-                    $attendance->date->format('Y/m/d'),
+                    optional($attendance->date)->format('Y/m/d'),
                     optional($attendance->clock_in)->format('H:i'),
                     optional($attendance->clock_out)->format('H:i'),
                     $attendance->rest_time ? gmdate('G:i', $attendance->rest_time) : '',
@@ -142,8 +144,9 @@ class AdminAttendanceController extends Controller
             }
 
             fclose($fp);
+
         }, 200, [
-            'Content-Type'        => 'text/csv',
+            'Content-Type' => 'text/csv',
             'Content-Disposition' => 'attachment; filename="attendance_' . $month->format('Ym') . '.csv"',
         ]);
     }

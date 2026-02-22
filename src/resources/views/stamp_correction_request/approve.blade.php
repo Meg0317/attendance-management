@@ -150,7 +150,7 @@
     {{-- 備考 --}}
     <div class="row">
         <div class="label">備考</div>
-        <div class="value">
+        <div class="value note-text">
             {{ $stampCorrectionRequest->reason }}
         </div>
     </div>
@@ -161,10 +161,10 @@
 <div class="actions">
     @if($stampCorrectionRequest->status === 0)
         <form method="POST"
-              action="{{ route(
-                  'admin.stamp_correction_request.approve.store',
-                  $stampCorrectionRequest
-              ) }}">
+            action="{{ route(
+                'admin.stamp_correction_request.approve.store',
+                $stampCorrectionRequest
+            ) }}">
             @csrf
             <button type="submit" class="btn">承認</button>
         </form>

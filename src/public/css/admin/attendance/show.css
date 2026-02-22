@@ -86,6 +86,7 @@ textarea {
     border: 1px solid #ccc;
     padding: 6px;
     font-weight: bold;
+    padding-left: 1em;
 }
 
 .error {
