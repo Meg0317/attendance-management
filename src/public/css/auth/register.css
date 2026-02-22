@@ -30,12 +30,13 @@
 }
 
 .form__group {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     font-weight: bold;
 }
 
 .form__group-title {
     text-align: left;
+    margin-bottom: 10px;
 }
 
 .register-form__error-message {

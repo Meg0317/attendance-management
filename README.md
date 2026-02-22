@@ -5,9 +5,9 @@
 ### Docker ビルド
 
 1. リポジトリをクローン
-   `git@github.com:Meg0317/attendance-management.git`
+   `git clone git@github.com:Meg0317/attendance-management.git`
+   `cd attendance-management`
 2. Docker Desktop を起動
-3. コンテナをビルド・起動
    `docker-compose up -d --build`
 
 ---
@@ -19,6 +19,7 @@
 2. パッケージインストール
    `composer install`
 3. `.env` ファイルを作成
+   `cp .env.example .env`
 4. `.env` に以下を設定
 
 DB_CONNECTION=mysql
@@ -37,49 +38,6 @@ DB_PASSWORD=laravel_pass
 7. シーディングの実行
    `php artisan db:seed`
 
-## 環境構築(クローン)
-
-**Docker ビルド**
-
-1. クローンを作成する
-2. `git@github.com:Meg0317/attendance-management.git`
-3. DockerDesktop アプリを立ち上げる
-4. `docker-compose up -d --build`
-
-**Laravel 環境構築(クローン)**
-
-1. `docker-compose exec php bash`
-2. `composer install`
-3. 新しく.env ファイルを作成し環境変数を変更
-4. .env に以下の環境変数を追加
-
-```text
-   DB_CONNECTION=mysql
-   DB_HOST=mysql
-   DB_PORT=3306
-   DB_DATABASE=laravel_db
-   DB_USERNAME=laravel_user
-   DB_PASSWORD=laravel_pass
-```
-
-5. アプリケーションキーの作成
-
-```bash
-php artisan key:generate
-```
-
-6. マイグレーションの実行
-
-```bash
-php artisan migrate
-```
-
-7. シーディングの実行
-
-```bash
-php artisan db:seed
-```
-
 ## 使用技術(実行環境)
 
 - PHP 7.4.9 (fpm)
@@ -96,6 +54,22 @@ php artisan db:seed
 - 開発環境：http://localhost/
 - phpMyAdmin:：http://localhost:8080/
 - mailhog：http://localhost:8025
+
+## テスト用アカウント
+
+- 一般ユーザー
+
+- メールアドレス：user1@example.com
+
+- パスワード：password
+
+- ※ user1 のみメール認証済みです。
+
+- 管理者
+
+- メールアドレス：admin@example.com
+
+- パスワード：password
 
 ## 補足仕様
 
@@ -132,3 +106,7 @@ php artisan db:seed
 
 - 管理者
   `POST /admin/attendance`
+
+### カレンダーのアイコンについて
+
+アイコンのクリックができる仕様です

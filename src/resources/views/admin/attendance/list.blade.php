@@ -13,8 +13,10 @@
     <div class="attendance-month">
 
         {{-- 左リンク --}}
-        <a href="{{ route('admin.attendance.list', ['date'=>($date instanceof \Carbon\Carbon ? $date->copy()->subDay()->format('Y-m-d') : $date)]) }}">
-            ← 前日
+        <a href="{{ route('admin.attendance.list', ['date'=>($date instanceof \Carbon\Carbon ? $date->copy()->subDay()->format  ('Y-m-d') : $date)]) }}">
+            <img src="{{ asset('images/arrow-left.png') }}"
+                alt="前日" class="arrow-icon">
+            前日
         </a>
 
         {{-- 中央：カレンダーアイコン + 日付 --}}
@@ -25,12 +27,13 @@
                     <input type="date" name="date" value="{{ $date instanceof \Carbon\Carbon ? $date->format('Y-m-d') : $date }}" onchange="this.form.submit()">
                 </label>
             </form>
-            <span class="attendance-month__current">{{ $date instanceof \Carbon\Carbon ? $date->format('Y年m月d日') : $date }}</span>
+            <span class="attendance-month__current">{{ $date instanceof \Carbon\Carbon ? $date->format('Y/m/d') : $date }}</span>
         </div>
 
         {{-- 右リンク --}}
         <a href="{{ route('admin.attendance.list', ['date'=>($date instanceof \Carbon\Carbon ? $date->copy()->addDay()->format('Y-m-d') : $date)]) }}">
-            翌日 →
+            翌日
+            <img src="{{ asset('images/arrow-left.png') }}" alt="翌日" class="arrow-icon arrow-right">
         </a>
 
     </div>
@@ -50,19 +53,13 @@
                     <th>詳細</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="attendance-body">
                 @foreach ($attendances as $attendance)
                 <tr>
                     <td>{{ $attendance->user->name }}</td>
                     <td>{{ optional($attendance->clock_in)->format('H:i') ?? '' }}</td>
                     <td>{{ optional($attendance->clock_out)->format('H:i') ?? '' }}</td>
-                    <td>
-                        @if($attendance->restTimes->isNotEmpty())
-                            @foreach($attendance->restTimes as $rest)
-                                {{ optional($rest->rest_start)->format('H:i') ?? '-' }}〜{{ optional($rest->rest_end)->format('H:i') ?? '-' }}<br>
-                            @endforeach
-                        @endif
-                    </td>
+                    <td>{{ $attendance->rest_time ? gmdate('G:i', $attendance->rest_time) : '' }}</td>
                     <td>{{ $attendance->work_time ? gmdate('G:i', $attendance->work_time) : '' }}</td>
                     <td>
                         <a class="detail-link" href="{{ route('admin.attendance.show', [

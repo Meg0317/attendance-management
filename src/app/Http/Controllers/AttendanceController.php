@@ -39,6 +39,91 @@ class AttendanceController extends Controller
     }
 
     /**
+     * 出勤打刻
+     */
+    public function start()
+    {
+        $attendance = Attendance::firstOrCreate(
+            [
+                'user_id' => Auth::id(),
+                'date'    => today(),
+            ]
+        );
+
+        if ($attendance->clock_in) {
+            return back(); // すでに出勤済み
+        }
+
+        $attendance->update([
+            'clock_in' => now(),
+            'status'   => 'working',
+        ]);
+
+        return redirect()->route('attendance.index');
+    }
+
+
+    /**
+     * 休憩開始
+     */
+    public function restStart()
+    {
+        $attendance = Attendance::where('user_id', Auth::id())
+            ->whereDate('date', today())
+            ->firstOrFail();
+
+        RestTime::create([
+            'attendance_id' => $attendance->id,
+            'rest_start'    => now(),
+            'order'         => $attendance->restTimes()->count() + 1,
+        ]);
+
+        return redirect()->route('attendance.index');
+    }
+
+    /**
+     * 休憩終了
+     */
+    public function restEnd()
+    {
+        $attendance = Attendance::where('user_id', Auth::id())
+            ->whereDate('date', today())
+            ->with('restTimes')
+            ->firstOrFail();
+
+        $rest = $attendance->restTimes()
+            ->whereNull('rest_end')
+            ->latest()
+            ->first();
+
+        if ($rest) {
+            $rest->update([
+                'rest_end' => now(),
+            ]);
+        }
+
+        return redirect()->route('attendance.index');
+    }
+
+    /**
+     * 退勤打刻
+     */
+    public function clockout()
+    {
+        $attendance = Attendance::where('user_id', Auth::id())
+            ->whereDate('date', today())
+            ->firstOrFail();
+
+        $attendance->update([
+            'clock_out' => now(),
+            'status'    => 'finished',
+        ]);
+
+        return redirect()->route('attendance.index');
+    }
+
+
+    /**
      * 勤怠一覧（月次）
      */
     public function list()
@@ -77,29 +162,35 @@ class AttendanceController extends Controller
         $date = Carbon::parse($date)->toDateString();
 
         $attendance = Attendance::with('restTimes')
-            ->firstOrCreate(
-                [
-                    'user_id' => Auth::id(),
-                    'date'    => $date,
-                ],
-                ['status' => 'normal']
-            );
-
-        // 🔑 最新の修正申請
-        $latestRequest = StampCorrectionRequest::where('attendance_id', $attendance->id)
-            ->latest()
+            ->where('user_id', Auth::id())
+            ->whereDate('date', $date)
             ->first();
 
-        // 🔑 承認待ちなら readonly
-        $readonly = $latestRequest?->status === StampCorrectionRequest::STATUS_PENDING;
+        // 🔥 無ければ「保存しない」仮オブジェクトを作る
+        if (!$attendance) {
+            $attendance = new Attendance([
+                'user_id' => Auth::id(),
+                'date'    => $date,
+                'status'  => 'normal',
+            ]);
+        }
 
-        return view('attendance.show', [
-            'attendance'     => $attendance,
-            'latestRequest'  => $latestRequest,
-            'readonly'       => $readonly,
-            'user'           => Auth::user(),
-            'date'           => $date,
-        ]);
+        $latestRequest = null;
+
+        if ($attendance->exists) {
+            $latestRequest = StampCorrectionRequest::where('attendance_id', $attendance->id)
+                ->latest()
+                ->first();
+        }
+
+        $readonly = $latestRequest
+            && $latestRequest->status === StampCorrectionRequest::STATUS_PENDING;
+
+        return view('attendance.show', compact(
+            'attendance',
+            'latestRequest',
+            'readonly'
+        ));
     }
 
 

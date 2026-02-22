@@ -51,7 +51,7 @@
                     <th>詳細</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="request-body">
                 @foreach ($requests as $request)
                     <tr>
                         <td>

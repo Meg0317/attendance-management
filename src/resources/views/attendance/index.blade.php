@@ -15,13 +15,13 @@
         @elseif ($status === 'resting')
             休憩中
         @elseif ($status === 'finished')
-            退勤済み
+            退勤済
         @endif
     </h1>
 
     <div class="attendance-datetime">
         <p class="attendance-date">
-            {{ now()->locale('ja')->isoFormat('YYYY年M月D日（ddd）') }}
+            {{ now()->locale('ja')->isoFormat('YYYY年M月D日(ddd)') }}
         </p>
         <p class="attendance-time">
             {{ now()->format('H:i') }}

@@ -39,6 +39,7 @@
 
 .form__group-title {
     text-align: left;
+    margin-bottom: 10px;
 }
 
 .login-form__error-message {

@@ -20,44 +20,28 @@
 .attendance-status {
     font-size: 18px;
     font-weight: bold;
-    padding: 8px 24px;
-    border-radius: 20px;
+    padding: 8px 35px;
+    border-radius: 50px;
     margin-bottom: 32px;
     margin-top: 80px;
     background-color: #C8C8C8;
     color: #696969;
 }
 
-/* 状態別（必要なら後で色変更可） */
-/* .attendance-status.working {
-    background-color: #000;
-    color: #fff;
-}
-
-.attendance-status.resting {
-    background-color: #fff;
-    color: #000;
-    border: 1px solid #000;
-}
-
-.attendance-status.finished {
-    background-color: #f5f5f5;
-    color: #000;
-} */
-
 /* 日付・時間 */
 .attendance-datetime {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .attendance-date {
     font-size: 40px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .attendance-time {
     font-size: 80px;
     font-weight: bold;
+    margin-bottom:60px
 }
 
 /* アクション */
@@ -69,7 +53,7 @@
 
 /* ボタン共通 */
 .btn {
-    padding: 14px 40px;
+    padding: 14px 80px;
     font-size: 32px;
     border-radius: 20px;
     cursor: pointer;
@@ -93,7 +77,7 @@
 /* 出勤中だけ横並び */
 .attendance-actions-row {
     display: flex;
-    gap: 24px;
+    gap:80px;
     /* ボタン間の余白 */
 }
 

@@ -18,23 +18,25 @@
     border-left: 8px solid #000000;
     margin-top: 50px;
     margin-bottom: 40px;
+    padding-left: 20px;
 }
 
 /* タブ */
 .request-list__tabs {
     display: flex;
-    gap: 120px;
+    gap: 80px;
+    margin-left: 30px;
 }
 
 .request-list__tab {
     padding-bottom: 8px;
     text-decoration: none;
-    color: #666;
-    font-weight: bold;
+    color: #000000;
 }
 
 .request-list__tab.is-active {
     color: #000000;
+    font-weight: bold;
 }
 
 /* タブ下の線 */
@@ -57,15 +59,53 @@
     width: 100%;
     border-collapse: collapse;
     background-color: #FFFFFF;
+    border-radius: 10px;
 }
 
 .request-list__table th,
 .request-list__table td {
     padding: 16px 8px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+    text-align: center;
+    border-bottom: 2px solid #E1E1E1;
     color: #737373;
 }
+
+/* ✅ ヘッダー下だけ 3px */
+.request-list__table thead th {
+    border-bottom: 3px solid #E1E1E1;
+}
+
+/* ✅ ボディは 2px */
+.request-list__table tbody td {
+    border-bottom: 2px solid #E1E1E1;
+}
+
+/* ✅ 最後の行は消す */
+.request-list__table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.request-list__table th,
+.request-list__table td {
+    text-align: left;
+}
+
+/* 1列目（状態）中央 */
+.request-list__table th:nth-child(1),
+.request-list__table td:nth-child(1) {
+    text-align: center;
+}
+
+/* 6列目（詳細）中央 */
+.request-list__table th:nth-child(6),
+.request-list__table td:nth-child(6) {
+    text-align: center;
+}
+
+.request-list__table td:nth-child(4) {
+    text-align: left;
+}
+
 
 .request-list__table th {
     font-weight: bold;
@@ -73,6 +113,11 @@
 
 .request-list__label {
     color: #737373;
+}
+
+.request-body {
+    font-size: 16px;
+    font-weight: bold;
 }
 
 /* 詳細リンク */

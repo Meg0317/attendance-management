@@ -25,13 +25,20 @@
         {{-- 左リンク --}}
         @if ($isAdmin)
             <a href="{{ route('admin.attendance.staff', [
-                'user'  => $user->id,
-                'month' => $month->copy()->subMonth()->format('Y-m')
-            ]) }}">← 前月</a>
+                    'user'  => $user->id,
+                    'month' => $month->copy()->subMonth()->format('Y-m')
+                ]) }}">
+                <img src="{{ asset('images/arrow-left.png') }}"
+                    alt="前月" class="arrow-icon">
+                前月
+            </a>
         @else
             <a href="{{ route('attendance.list', [
-                'month' => $month->copy()->subMonth()->format('Y-m')
-            ]) }}">← 前月</a>
+                    'month' => $month->copy()->subMonth()->format('Y-m')
+                ]) }}">
+                <img src="{{ asset('images/arrow-left.png') }}" alt="前月" class="arrow-icon">
+                前月
+            </a>
         @endif
 
         {{-- 中央固定（カレンダーあり） --}}
@@ -52,20 +59,27 @@
                 </label>
             </form>
             <span class="attendance-month__current">
-                {{ $displayMonth->format('Y / m') }}
+                {{ $displayMonth->format('Y/m') }}
             </span>
         </div>
 
         {{-- 右リンク --}}
         @if ($isAdmin)
             <a href="{{ route('admin.attendance.staff', [
-                'user'  => $user->id,
-                'month' => $month->copy()->addMonth()->format('Y-m')
-            ]) }}">翌月 →</a>
+                    'user'  => $user->id,
+                    'month' => $month->copy()->addMonth()->format('Y-m')
+                ]) }}">
+                翌月
+                <img src="{{ asset('images/arrow-left.png') }}" alt="翌月" class="arrow-icon arrow-right">
+            </a>
         @else
             <a href="{{ route('attendance.list', [
                 'month' => $month->copy()->addMonth()->format('Y-m')
-            ]) }}">翌月 →</a>
+                ]) }}">
+                翌月
+                <img src="{{ asset('images/arrow-left.png') }}" alt="翌月" class="arrow-icon arrow-right">
+
+            </a>
         @endif
 
     </div>
@@ -85,7 +99,7 @@
                     <th>詳細</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="attendance-body">
                 @foreach ($dates as $date)
                     @php
                         $attendance = $attendances[$date->toDateString()] ?? null;

@@ -158,7 +158,9 @@
             @if(!$readonly)
                 <textarea name="note">{{ old('note', $attendance->note) }}</textarea>
             @else
-                {{ $latestRequest->reason ?? $attendance->note ?? '' }}
+                <div class="note-text">
+                    {{ $latestRequest->reason ?? $attendance->note ?? '' }}
+                </div>
             @endif
         </div>
     </div>

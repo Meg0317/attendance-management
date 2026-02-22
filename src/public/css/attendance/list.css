@@ -14,6 +14,7 @@
     border-left: 8px solid #000000;
     margin-top: 50px;
     margin-bottom: 40px;
+    padding-left: 20px;
 }
 
 /* 月切り替え */
@@ -32,6 +33,7 @@
 .attendance-month a {
     text-decoration: none;
     color: #737373;
+    font-weight: bold;
     white-space: nowrap;
     line-height: 24px;
 }
@@ -42,7 +44,11 @@
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 10px;
+}
+.attendance-month__current {
+    font-size: 20px;
+    font-weight: bold;
 }
 
 .calendar-label {
@@ -67,10 +73,22 @@
     height: 24px;
 }
 
-.attendance-month__current {
-    font-weight: bold;
-    margin-left: 2px;
-    line-height: 24px;
+.arrow-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    filter: brightness(0) saturate(100%) invert(70%);
+}
+
+.arrow-right {
+    transform: scaleX(-1);
+}
+
+a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
 }
 
 /* 余白 */
@@ -82,13 +100,11 @@
 .attendance-table-wrapper {
     background: #FFFFFF;
     border-radius: 6px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
     overflow: hidden;
-    margin-bottom: 70px; 
+    margin-bottom: 70px;
 }
 
 .attendance-label {
-    border-bottom: solid 3px #E1E1E1;
     color: #737373;
 }
 
@@ -104,9 +120,19 @@
     text-align: center;
 }
 
-/* 横線（区切り線） */
-.attendance__table tbody tr {
-    border-top: 2px solid #E1E1E1;
+/* ✅ ラベルの下だけ 3px */
+.attendance__table thead th {
+    border-bottom: 3px solid #E1E1E1;
+}
+
+/* ✅ ボディの区切り線 2px */
+.attendance__table tbody td {
+    border-bottom: 2px solid #E1E1E1;
+}
+
+/* ✅ 最後の行は消す場合 */
+.attendance__table tbody tr:last-child td {
+    border-bottom: none;
 }
 
 /* ヘッダー */
@@ -114,9 +140,9 @@
     background: #FFFFFF;
 }
 
-.detail-link {
-    text-decoration: none;
-    color: inherit;
+.attendance-body td {
+    color: #737373;
+    font-size: 16px;
     font-weight: bold;
 }
 
@@ -144,4 +170,6 @@
     color: #000000;
     font-weight: bold;
     font-size: 16px;
+    display: inline-block;
+    text-align: center;
 }

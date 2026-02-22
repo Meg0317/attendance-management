@@ -10,12 +10,17 @@
 }
 
 .page-title {
-    margin-bottom: 16px;
+    border-left: 8px solid #000000;
+    margin-top: 50px;
+    margin-bottom: 40px;
+    font-size: 30px;
+    padding-left: 20px;
 }
 
 .card {
-    background: #fff;
-    border: 1px solid #ddd;
+    border: 2px solid #E1E1E1;
+    background-color: #FFFFFF;
+    border-radius: 10px;
 }
 
 .row {
@@ -40,11 +45,13 @@
 }
 
 .value.align-time {
-    gap: 16px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .value.align-time .left {
     width: 96px;
+    margin-left: 20px;
 }
 
 .value.align-time .right {
@@ -54,6 +61,8 @@
 
 .value.time {
     gap: 16px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .value.time input,
@@ -76,6 +85,7 @@ textarea {
     height: 80px;
     border: 1px solid #ccc;
     padding: 6px;
+    font-weight: bold;
 }
 
 .error {
@@ -92,11 +102,14 @@ textarea {
 }
 
 .btn {
-    background: #000;
-    color: #fff;
+    background: #000000;
+    color: #FFFFFF;
     padding: 10px 28px;
     border: none;
     cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 22px;
 }
 
 .alert.success {
